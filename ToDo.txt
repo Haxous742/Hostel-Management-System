@@ -11,6 +11,17 @@ Must Include-
 	d. General Complaints
 4. Community posts
 5. Cab sharing
+6. Personel profile
+	a. Name
+	b. Microsoft Auth with personel id
+	c. Parent email id for otp
+	d. Room no
+	e. Phone no.
+	f. Branch
+	g. Roll no
+	h. Birthday(optional)
+	i. 
+7. Extra features that can be added later on, to be included in readme
 
 
 What we may include-
@@ -19,7 +30,9 @@ What we may include-
     a. post or profile photos
 3. Inclusion of AI chat bot
 4. AI auto complete
-5.
+5. Display whosever birthday it is
+
+
 
 
 
