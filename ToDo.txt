@@ -1,0 +1,26 @@
+Must Include-
+1. Leave request with otp for parent verification
+2. Mess
+	a. Display Current Menu
+	b. Rating todays menu
+	c. Canteen ka menu
+3. Complaints
+	a. Housekeeping complaints
+	b. Hostel facilities
+	c. Mess 
+	d. General Complaints
+4. Community posts
+5. Cab sharing
+
+
+What we may include-
+1. polls in community post
+2. photos-
+    a. post or profile photos
+3. Inclusion of AI chat bot
+4. AI auto complete
+5.
+
+
+
+
