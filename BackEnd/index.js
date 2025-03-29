@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
+import apiRouter from './routes/apiRouter.js';
 dotenv.config();
 
 
@@ -39,11 +40,7 @@ app.use(cookieParser());
 
 
 //Setting up the routes
-
-app.post("/api/login", (req, res) => {
-  console.log(req.body);
-  res.send("Hello from the server!");
-})
+app.use('/api', apiRouter);
 
 
 
