@@ -31,19 +31,27 @@ apiRouter.post("/login", async (req, res) => {
 });
 
 apiRouter.post("/signup", async (req, res) => {
-    const { email, name, token, } = req.body;
-    const user = await user_model.findOne({ email });
-    if (user) {
-        res.json({ message: "user already in database" });
+    const { email, name, token,phone,parentEmail,parentPhone,roomNumber,avatarURL,gender,dob,batch } = req.body;
+    //cheking if anything is empty
+    if(!email || !name || !token || !phone || !parentEmail ||!parentPhone || !roomNumber || !gender || !dob || !batch){
+        res.status(400);
+        res.json({ message: "all fields required" });
+        
     }
-    else {
-        const newUser = new user_model({
-            email,
-            name,
-            role: "student"
-        });
-        await newUser.save();
-        res.json({ message: "user created" });
+    else{
+        const user = await user_model.findOne({ email });
+        if (user) {
+            res.json({ message: "user already in database" });
+        }
+        else {
+            const newUser = new user_model({
+                email,
+                name,
+                role: "student"
+            });
+            await newUser.save();
+            res.json({ message: "user created" });
+        }
     }
 });
 

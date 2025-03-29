@@ -4,6 +4,7 @@ import { Route,Routes } from 'react-router-dom'
 import Login from './login'
 import Dashboard from './dashboard'
 import LandingPage from './LandingPage'
+import './App.css'
 
 
 const App = () => {

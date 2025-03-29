@@ -3,11 +3,14 @@ import React from 'react'
 import { auth } from './firebase'
 import { provider } from './firebase'
 import axios from 'axios'
+import './App.css'
 
 const login = () => {
 
     const handleLogin = async() => {
 
+      // sign in with popup
+      
         signInWithPopup(auth, provider).then((loginResponse) => {
           
           const userDetails = {
@@ -40,11 +43,13 @@ const login = () => {
 
     }
 
+     
+
   return (
     <div>
-        <h1>LOGIN</h1>
+        <h1 >LOGIN</h1>
     
-        <button onClick={handleLogin}>Login</button>
+        <button className='px-4 py-2 text-white bg-gradient-to-r from-pink-500 to-red-500 rounded hover:opacity-90' onClick={handleLogin}>Login</button>
 
     </div>
   )
