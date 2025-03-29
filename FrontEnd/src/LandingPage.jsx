@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
+import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
    
+  const navigate = useNavigate(); 
+
   return (
     <div> 
       <div className="min-h-screen bg-gray-900 text-white flex flex-col justify-center items-center relative">
@@ -35,7 +37,7 @@ const LandingPage = () => {
         </main>
 
         <footer className="mt-16 relative z-10">
-        <button class="relative inline-flex items-center justify-center px-8 py-3 mb-2 border-2 border-white text-lg font-semibold rounded-lg text-white bg-transparent hover:bg-white hover:text-black-900 focus:outline-none focus:ring-4 focus:ring-black-200 dark:text-white dark:border-gray-500 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition duration-300">
+        <button onClick={() => navigate("/login")} class="relative inline-flex items-center justify-center px-8 py-3 mb-2 border-2 border-white text-lg font-semibold rounded-lg text-white bg-transparent hover:bg-white hover:text-black-900 focus:outline-none focus:ring-4 focus:ring-black-200 dark:text-white dark:border-gray-500 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition duration-300">
           Login
         </button>
         </footer>
