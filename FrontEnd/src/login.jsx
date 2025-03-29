@@ -8,11 +8,26 @@ const login = () => {
 
     const handleLogin = async() => {
 
-        const loginRespose= await signInWithPopup(auth, provider)
-        console.log(loginRespose.user.accessToken)
-        console.log(loginRespose)
+        signInWithPopup(auth, provider).then((loginResponse) => {
+          
+          const userDetails = {
+              email: loginResponse.user.email,
+              name: loginResponse.user.displayName,
+              token: loginResponse.user.accessToken
+          }
 
-      
+          // cheking if user is from @iiitb.ac.in or not
+          if (userDetails.email.endsWith('@iiitb.ac.in')) {
+              console.log(userDetails)
+          }
+          else{
+            alert("Please use your @iiitb.ac.in email to login")
+          }
+
+      })
+      .catch((error) => {
+        console.log(error)
+      });
 
     }
 

@@ -22,7 +22,7 @@ mongoose.connect(mongoURI, {
   
 
 
-
+//Setting up some middleware
 app.use(cors({
     origin: 'http://localhost:5174',
     credentials: true,
