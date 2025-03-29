@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 
 const LandingPage = () => {
-    const [passwordVisible, setPasswordVisible] = useState(false);
+   
   return (
     <div> 
       <div className="min-h-screen bg-gray-900 text-white flex flex-col justify-center items-center relative">

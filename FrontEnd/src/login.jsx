@@ -4,6 +4,8 @@ import { auth } from './firebase'
 import { provider } from './firebase'
 import axios from 'axios'
 import './App.css'
+import { useState } from 'react'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid'
 
 const login = () => {
 
@@ -43,9 +45,10 @@ const login = () => {
 
     }
 
-     
+    const [passwordVisible, setPasswordVisible] = useState(false);
 
   return (
+    
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-900">
     {/* Welcome Message with Image Overlay */}
     <div
