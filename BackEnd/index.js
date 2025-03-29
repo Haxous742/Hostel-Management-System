@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
 dotenv.config();
 
 
@@ -29,8 +30,22 @@ app.use(cors({
 }));
 app.use(express.json());    
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(cookieParser());
+
+
+
+
+
+//Setting up the routes
+
+app.post("/api/login", (req, res) => {
+  console.log(req.body);
+  res.send("Hello from the server!");
+})
+
+
 
 
 app.listen(PORT, () => {

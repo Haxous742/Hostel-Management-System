@@ -18,7 +18,16 @@ const login = () => {
 
           // cheking if user is from @iiitb.ac.in or not
           if (userDetails.email.endsWith('@iiitb.ac.in')) {
-              console.log(userDetails)
+            // send user details 
+            axios.post('/api/login', userDetails)
+              .then((response) => {
+                console.log(response.data)
+                alert("Login Successfull")
+              })
+              .catch((error) => {
+                console.log(error)
+                alert("Login Failed")
+              });
           }
           else{
             alert("Please use your @iiitb.ac.in email to login")
