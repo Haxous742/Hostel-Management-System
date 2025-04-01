@@ -1,5 +1,6 @@
 import { signInWithPopup } from 'firebase/auth';
 import React from 'react';
+import { useNavigate } from 'react-router-dom'
 import { auth } from './firebase';
 import { provider } from './firebase';
 import './App.css';
@@ -7,11 +8,9 @@ import { useState } from 'react';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 
 const login = () => {
-  const handleMicrosoftLogin = async () => {
-    // Add logic for Microsoft login here
-    alert('Microsoft login functionality to be implemented.');
-  };
-
+  
+  const navigate = useNavigate(); 
+     
   return (
     <div
       className="flex items-center justify-center min-h-screen bg-gray-900"
@@ -36,7 +35,7 @@ const login = () => {
 
         {/* Sign in with Microsoft Button */}
         <button
-          onClick={handleMicrosoftLogin}
+          onClick={() => navigate("/dashboard")}
           className="flex items-center justify-center w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-200"
         >
           <img
