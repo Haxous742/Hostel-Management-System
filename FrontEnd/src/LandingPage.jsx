@@ -2,9 +2,67 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
+
+import { signInWithPopup } from 'firebase/auth'
+import { auth } from './firebase'
+import { provider } from './firebase'
+import axios from 'axios'
+
 const LandingPage = () => {
+<<<<<<< Updated upstream
 
   const navigate = useNavigate();
+=======
+   
+
+  const handleLogin = async() => {
+  
+        // sign in with popup
+        
+          signInWithPopup(auth, provider).then((loginResponse) => {
+            
+            const userDetails = {
+                email: loginResponse.user.email,
+                name: loginResponse.user.displayName,
+                token: loginResponse.user.accessToken
+            }
+  
+            // cheking if user is from @iiitb.ac.in or not
+            if (userDetails.email.endsWith('@iiitb.ac.in')) {
+              // send user details 
+              axios.post('/api/login', userDetails)
+                .then((response) => {
+                  if (response.data.route === "/signup") {
+                    navigate("/signup", { state: { userDetails } });
+                  }
+                  else if(response.data.route === "/dashboard"){
+                  
+                    console.log(response.data)
+                    navigate("/dashboard");
+                  }
+                })
+                .catch((error) => {
+                  console.log(error)
+                  alert("Login Failed")
+                });
+            }
+            else{
+              alert("Please use your @iiitb.ac.in email to login")
+            }
+  
+        })
+        .catch((error) => {
+          console.log(error)
+        });
+  
+      }
+
+
+
+
+
+  const navigate = useNavigate(); 
+>>>>>>> Stashed changes
 
   return (
     <div>
@@ -37,6 +95,7 @@ const LandingPage = () => {
         </main>
 
         <footer className="mt-16 relative z-10">
+<<<<<<< Updated upstream
           <button onClick={() => navigate("/login")} class="relative inline-flex items-center justify-center px-8 py-3 mb-2 border-2 border-white text-lg font-semibold rounded-lg text-white bg-transparent hover:bg-black hover:text-black-900 focus:outline-none focus:ring-4 focus:ring-black-200 dark:text-white dark:border-gray-500 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition duration-300 animate-slide-up">
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"
@@ -45,6 +104,11 @@ const LandingPage = () => {
             />
             Sign in with Microsoft
           </button>
+=======
+        <button onClick={handleLogin} class="relative inline-flex items-center justify-center px-8 py-3 mb-2 border-2 border-white text-lg font-semibold rounded-lg text-white bg-transparent hover:bg-white hover:text-black-900 focus:outline-none focus:ring-4 focus:ring-black-200 dark:text-white dark:border-gray-500 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition duration-300">
+          Login
+        </button>
+>>>>>>> Stashed changes
         </footer>
       </div>
 

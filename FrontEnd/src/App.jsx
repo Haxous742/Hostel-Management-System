@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { Route,Routes } from 'react-router-dom'
-import Login from './login'
+import Signup from './signup'
 import Dashboard from './dashboard'
 import LandingPage from './LandingPage'
 import './App.css'
@@ -13,7 +13,7 @@ const App = () => {
       <Routes>
 
         <Route index element={<LandingPage />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
 
       </Routes>

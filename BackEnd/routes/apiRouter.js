@@ -16,21 +16,23 @@ apiRouter.post("/login", async (req, res) => {
         res.json({ message: "user not in database",route: "/signup" });
     }
     else {
-    
+        console.log(user)
         const cookie = await generateCookie(user, user.role);
+        console.log(cookie);
         res.cookie("jwt", cookie, {
             httpOnly: true,
             secure: true,
             sameSite: "none",
             maxAge: 24 * 60 * 60 * 1000 // 1 day
         });
-        res.json({ message: "login successfull", route: "/dahboard" });
+        res.json({ message: "login successfull", route: "/dashboard" });
     
     }
 
 });
 
 apiRouter.post("/signup", async (req, res) => {
+    console.log(req.body)
     const { email, name, token,phone,parentEmail,parentPhone,roomNumber,avatarURL,gender,dob,batch } = req.body;
     //cheking if anything is empty
     if(!email || !name || !token || !phone || !parentEmail ||!parentPhone || !roomNumber || !gender || !dob || !batch){
@@ -66,6 +68,16 @@ apiRouter.post("/verify", async (req, res) => {
         res.json({ message: "cookie not verified" });
     }
 });
+
+
+
+apiRouter.post('/logout', (req, res) => {
+    res.clearCookie('jwt');
+    res.json({ message: "Logged out successfully" });
+});
+  
+
+
 
 import studentRouter from "./studentRouter.js";
 apiRouter.use("/student", studentRouter);

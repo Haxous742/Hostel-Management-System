@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream:FrontEnd/src/login.jsx
 import { signInWithPopup } from 'firebase/auth';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +11,19 @@ const login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null); 
+=======
+
+import React from 'react'
+import './App.css'
+import { useState } from 'react'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid'
+
+const signup = () => {
+
+    
+
+    const [passwordVisible, setPasswordVisible] = useState(false);
+>>>>>>> Stashed changes:FrontEnd/src/signup.jsx
 
   return (
     <div
@@ -83,4 +97,8 @@ const login = () => {
   );
 };
 
+<<<<<<< Updated upstream:FrontEnd/src/login.jsx
 export default login;
+=======
+export default signup;
+>>>>>>> Stashed changes:FrontEnd/src/signup.jsx

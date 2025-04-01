@@ -6,7 +6,7 @@ dotenv.config()
 
 async function generateCookie(user,role){
 
-    const payload={username:user.username,role:role}
+    const payload={email:user.email,role:role}
     return jwt.sign(payload,process.env.JWT_SECRET_KEY);
 
 }
