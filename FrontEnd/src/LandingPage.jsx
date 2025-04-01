@@ -96,6 +96,7 @@ const LandingPage = () => {
 
         <footer className="mt-16 relative z-10">
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           <button onClick={() => navigate("/login")} class="relative inline-flex items-center justify-center px-8 py-3 mb-2 border-2 border-white text-lg font-semibold rounded-lg text-white bg-transparent hover:bg-black hover:text-black-900 focus:outline-none focus:ring-4 focus:ring-black-200 dark:text-white dark:border-gray-500 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition duration-300 animate-slide-up">
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"
@@ -105,6 +106,8 @@ const LandingPage = () => {
             Sign in with Microsoft
           </button>
 =======
+=======
+>>>>>>> Stashed changes
         <button onClick={handleLogin} class="relative inline-flex items-center justify-center px-8 py-3 mb-2 border-2 border-white text-lg font-semibold rounded-lg text-white bg-transparent hover:bg-white hover:text-black-900 focus:outline-none focus:ring-4 focus:ring-black-200 dark:text-white dark:border-gray-500 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition duration-300">
           Login
         </button>
