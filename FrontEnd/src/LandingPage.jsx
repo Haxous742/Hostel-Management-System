@@ -3,16 +3,16 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
 const LandingPage = () => {
-   
-  const navigate = useNavigate(); 
+
+  const navigate = useNavigate();
 
   return (
-    <div> 
+    <div>
       <div className="min-h-screen bg-gray-900 text-white flex flex-col justify-center items-center relative">
-        <img 
-          src="../public/img/Hostel.jpg" 
-          alt="Hostel" 
-          className="absolute inset-0 w-full h-full object-cover opacity-30"  
+        <img
+          src="../public/img/Hostel.jpg"
+          alt="Hostel"
+          className="absolute inset-0 w-full h-full object-cover opacity-30"
         />
 
         <header className="text-center space-y-4 relative z-10 px-16 py-12 mt-12">
@@ -37,9 +37,14 @@ const LandingPage = () => {
         </main>
 
         <footer className="mt-16 relative z-10">
-        <button onClick={() => navigate("/login")} class="relative inline-flex items-center justify-center px-8 py-3 mb-2 border-2 border-white text-lg font-semibold rounded-lg text-white bg-transparent hover:bg-white hover:text-black-900 focus:outline-none focus:ring-4 focus:ring-black-200 dark:text-white dark:border-gray-500 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition duration-300">
-          Login
-        </button>
+          <button onClick={() => navigate("/login")} class="relative inline-flex items-center justify-center px-8 py-3 mb-2 border-2 border-white text-lg font-semibold rounded-lg text-white bg-transparent hover:bg-black hover:text-black-900 focus:outline-none focus:ring-4 focus:ring-black-200 dark:text-white dark:border-gray-500 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700 transition duration-300 animate-slide-up">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"
+              alt="Microsoft Logo"
+              className="h-5 w-5 mr-2"
+            />
+            Sign in with Microsoft
+          </button>
         </footer>
       </div>
 
