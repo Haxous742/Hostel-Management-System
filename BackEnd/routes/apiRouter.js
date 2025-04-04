@@ -49,7 +49,7 @@ apiRouter.post("/signup", async (req, res) => {
             const newUser = new user_model({
                 email,
                 name,
-                role: "student"
+                role: "student",
             });
             await newUser.save();
             res.json({ message: "user created" });
