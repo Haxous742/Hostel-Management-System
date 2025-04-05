@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import apiRouter from './routes/apiRouter.js';
+import sendMail from './service/email.js';
+
 dotenv.config();
 
 
@@ -34,7 +36,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(cookieParser());
-
 
 
 
