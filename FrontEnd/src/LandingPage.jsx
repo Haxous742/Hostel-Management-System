@@ -55,12 +55,7 @@ const LandingPage = () => {
   
       }
 
-
-
-
-
-
-  return (
+ return (
     <div>
       <div className="min-h-screen bg-gray-900 text-white flex flex-col justify-center items-center relative">
         <img
