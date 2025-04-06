@@ -5,6 +5,7 @@ import Signup from './signup'
 import Dashboard from './dashboard'
 import LandingPage from './LandingPage'
 import Menu from './Menu'
+import NotFound from './NotFound'
 import './App.css'
 
 
@@ -23,6 +24,12 @@ const App = () => {
         <Route path="/dashboard/Profile" element={<Dashboard />} />
         <Route path="/dashboard/Leave" element={<Dashboard />} />
         <Route path="/dashboard/Leave/Cab-Sharing" element={<Dashboard />} />
+
+      
+        {/* Catch-all route (must be last) */}
+        <Route path="*" element={<NotFound />} />
+
+
       </Routes>
     </BrowserRouter>
   )
