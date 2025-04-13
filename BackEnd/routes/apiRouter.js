@@ -5,10 +5,10 @@ import user_model from "../model/users_model.js";
 
 const apiRouter = Router();
 
-
+//==============================================================================================
+//==============================================================================================
 apiRouter.post("/login", async (req, res) => {
 
-   console.log(req.body)
     const { email, name, token } = req.body;
     const user = await user_model.findOne({ email });
     
@@ -31,8 +31,12 @@ apiRouter.post("/login", async (req, res) => {
 
 });
 
+
+//==============================================================================================
+//==============================================================================================
+
 apiRouter.post("/signup", async (req, res) => {
-    console.log(req.body)
+    // console.log(req.body)
     const { email, name, token,phone,parentEmail,parentPhone,roomNumber,avatarURL,gender,dob,batch } = req.body;
     //cheking if anything is empty
     if(!email || !name || !token || !phone || !parentEmail ||!parentPhone || !roomNumber || !gender || !dob || !batch){
@@ -50,25 +54,57 @@ apiRouter.post("/signup", async (req, res) => {
                 email,
                 name,
                 role: "student",
+                phone,
+                parentEmail,
+                parentPhone,
+                roomNumber,
+                gender,
+                dob,
+                batch,
+    
             });
             await newUser.save();
+            const cookie = await generateCookie({
+                email: email,
+            }, "student");
+            res.cookie("jwt", cookie, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none",
+                maxAge: 24 * 60 * 60 * 1000 
+            });
             res.json({ message: "user created" });
         }
     }
 });
 
 
+//==============================================================================================
+//==============================================================================================
+
+
 apiRouter.post("/verify", async (req, res) => {
     const cookie = req.cookies.jwt;
     const user = await verifyCookie(cookie);
     if (user) {
-        res.json({ message: "cookie verified", user });
+        const item =await user_model.findOne({email: user.email})
+        if(item){
+            res.json({ message: "cookie verified", user });
+        }
+        else{
+            res.json({ message: "cookie not verified" });
+        }
+       
     }
     else {
         res.json({ message: "cookie not verified" });
     }
 });
 
+
+
+//==============================================================================================
+//==============================================================================================
 
 
 apiRouter.post('/logout', (req, res) => {
@@ -78,6 +114,8 @@ apiRouter.post('/logout', (req, res) => {
   
 
 
+//==============================================================================================
+//==============================================================================================
 
 import studentRouter from "./studentRouter.js";
 apiRouter.use("/student", studentRouter);

@@ -66,7 +66,7 @@ const LandingPage = () => {
 
         <header className="text-center space-y-4 relative z-10 px-16 py-12 mt-12">
           <motion.h1
-            className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-purple-400 leading-tight"
+            className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text  bg-gradient-to-r from-purple-500 to-pink-500"
             style={{ lineHeight: '1.2', paddingBottom: '0.5rem' }}
             initial={{ y: -100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
