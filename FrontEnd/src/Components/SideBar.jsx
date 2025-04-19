@@ -1,7 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const SideBar = () => {
+  const location = useLocation();
+  const isActive = (path) => location.pathname.startsWith(path);
+
   return (
     <aside
       id="logo-sidebar"
@@ -13,10 +16,14 @@ const SideBar = () => {
           <li>
             <Link
               to="/dashboard"
-              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              className={`flex items-center p-2 rounded-lg group ${
+                isActive("/dashboard") && location.pathname === "/dashboard"
+                  ? "bg-gray-200 text-black dark:bg-gray-700 dark:text-white"
+                  : "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              }`}
             >
               <svg
-                className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                className="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -35,11 +42,14 @@ const SideBar = () => {
           <li>
             <Link
               to="/dashboard/Community"
-              href="#"
-              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              className={`flex items-center p-2 rounded-lg group ${
+                isActive("/dashboard/Community")
+                  ? "bg-gray-200 text-black dark:bg-gray-700 dark:text-white"
+                  : "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              }`}
             >
               <svg
-                className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                className="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -58,10 +68,14 @@ const SideBar = () => {
           <li>
             <Link
               to="/dashboard/Complaints"
-              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              className={`flex items-center p-2 rounded-lg group ${
+                isActive("/dashboard/Complaints")
+                  ? "bg-gray-200 text-black dark:bg-gray-700 dark:text-white"
+                  : "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              }`}
             >
               <svg
-                className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                className="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -80,11 +94,14 @@ const SideBar = () => {
           <li>
             <Link
               to="/dashboard/Menu"
-              href="#"
-              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              className={`flex items-center p-2 rounded-lg group ${
+                isActive("/dashboard/Menu")
+                  ? "bg-gray-200 text-black dark:bg-gray-700 dark:text-white"
+                  : "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              }`}
             >
               <svg
-                className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                className="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -103,11 +120,14 @@ const SideBar = () => {
           <li>
             <Link
               to="/dashboard/Leave"
-              href="#"
-              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              className={`flex items-center p-2 rounded-lg group ${
+                isActive("/dashboard/Leave")
+                  ? "bg-gray-200 text-black dark:bg-gray-700 dark:text-white"
+                  : "text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              }`}
             >
               <svg
-                className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                className="w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
