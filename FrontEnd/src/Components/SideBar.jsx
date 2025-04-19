@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const SideBar = () => {
   return (
@@ -8,10 +9,29 @@ const SideBar = () => {
       aria-label="Sidebar"
     >
       <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
-        <h2 className="text-center text-lg font-bold text-gray-900 dark:text-white mb-4">
-          Dashboard
-        </h2>
         <ul className="space-y-2 font-medium">
+          <li>
+            <Link
+              to="/dashboard"
+              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+            >
+              <svg
+                className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 3h7v7H3zm11 0h7v7h-7zm0 11h7v7h-7zM3 14h7v7H3z"
+                />
+              </svg>
+              <span className="ms-3">Dashboard</span>
+            </Link>
+          </li>
           <li>
             <a
               href="#"
@@ -35,8 +55,8 @@ const SideBar = () => {
             </a>
           </li>
           <li>
-            <a
-              href="#"
+            <Link
+              to="/dashboard/Complaints"
               className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <svg
@@ -54,7 +74,7 @@ const SideBar = () => {
                 />
               </svg>
               <span className="ms-3">Complaints</span>
-            </a>
+            </Link>
           </li>
           <li>
             <a

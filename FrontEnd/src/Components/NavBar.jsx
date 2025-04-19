@@ -64,7 +64,7 @@ const Navbar = ({ onLogout }) => {
                 />
               </svg>
             </button>
-            <a href="#" className="flex items-center ms-3 md:me-24">
+            <a href="" className="flex items-center ms-3 md:me-24">
               <svg
                 className="w-8 h-8 mr-2 text-blue-600 dark:text-blue-400 transition-transform duration-200 hover:scale-105"
                 xmlns="http://www.w3.org/2000/svg"
@@ -125,7 +125,7 @@ const Navbar = ({ onLogout }) => {
                 <ul className="py-2">
                   <li>
                     <a
-                      href="#"
+                      href="/profile"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white transition-all duration-150 ease-in-out transform hover:scale-105"
                     >
                       Profile
