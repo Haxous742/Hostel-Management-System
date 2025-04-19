@@ -14,6 +14,7 @@ const Complaints = () => {
       .get('/api/student/complaints/show')
       .then((res) => {
         setComplaintsList(res.data);
+        console.log('Fetched complaints:', res.data);
       })
       .catch((err) => {
         console.error('Error fetching complaints:', err);

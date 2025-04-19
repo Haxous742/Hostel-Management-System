@@ -24,7 +24,7 @@ studentRouter.post("/complaints/new", async (req, res) => {
 
     try {
         const userData = await verifyCookie(cookie);
-        const student = await user.findOne({ email: userData.username });
+        const student = await user.findOne({ email: userData.email });
 
         if (!student) {
             return res.status(401).json({ message: "User not found" });
@@ -51,17 +51,18 @@ studentRouter.post("/complaints/new", async (req, res) => {
 studentRouter.get("/complaints/show", async (req, res) => {
     
     const cookie = req.cookies.jwt;
+    
 
     try {
         const userData = await verifyCookie(cookie);
-        const student = await user.findOne({ email: userData.username });
-        
+        const student = await user.findOne({ email: userData.email });
+       
         if (!student) {
             return res.status(401).json({ message: "User not found" });
         }
-
         const complaints = await Complaint.find({ userEmail: student.email }).sort({ date: -1 });
-
+        
+        console.log(complaints);
         res.status(200).json(complaints);
     } catch (err) {
         console.error(err);
