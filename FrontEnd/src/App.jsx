@@ -5,14 +5,12 @@ import Signup from './signup'
 import Dashboard from './dashboard'
 import LandingPage from './LandingPage'
 import Complaints from './complaints'
-
 import Menu from './Menu'
 import NotFound from './NotFound'
 import './App.css'
 import Leave from './Leave'
 import Community from './Community'
-
-
+import Profile from './Profile'
 
 const App = () => {
   return (
@@ -25,7 +23,7 @@ const App = () => {
         <Route path="/dashboard/Menu" element={<Menu />} />
         <Route path="/dashboard/Community" element={<Community />} />
         <Route path="/dashboard/Complaints" element={<Complaints />} />
-        <Route path="/dashboard/Profile" element={<Dashboard />} />
+        <Route path="/dashboard/Profile" element={<Profile />} />
         <Route path="/dashboard/Leave" element={<Leave />} />
         <Route path="/dashboard/Leave/Cab-Sharing" element={<Dashboard />} />
 

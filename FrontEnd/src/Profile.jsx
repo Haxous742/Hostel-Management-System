@@ -3,7 +3,8 @@ import axios from 'axios';
 import Navbar from './Components/NavBar';
 import SideBar from './Components/SideBar';
 
-const Community = () => {
+
+const Profile = () => {
     return (
         <div>
         <Navbar />
@@ -12,4 +13,5 @@ const Community = () => {
     );
 };
 
-export default Community;
+export default Profile;
+

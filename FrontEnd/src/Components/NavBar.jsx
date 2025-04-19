@@ -124,7 +124,7 @@ const Navbar = ({ onLogout }) => {
                 <ul className="py-2">
                   <li>
                     <a
-                      href="/profile"
+                      href="/dashboard/Profile"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white transition-all duration-150 ease-in-out transform hover:scale-105"
                     >
                       Profile
@@ -136,7 +136,7 @@ const Navbar = ({ onLogout }) => {
                       onClick={onLogout}
                       className="inline-block mx-4 mt-1 mb-2 px-4 py-1 text-sm text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 rounded-lg transition-all duration-150 ease-in-out transform hover:scale-105"
                     >
-                      Sign out
+                      Log out
                     </a>
                   </li>
                 </ul>
