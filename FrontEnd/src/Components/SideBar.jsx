@@ -33,7 +33,8 @@ const SideBar = () => {
             </Link>
           </li>
           <li>
-            <a
+            <Link
+              to="/dashboard/Community"
               href="#"
               className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
@@ -52,7 +53,7 @@ const SideBar = () => {
                 />
               </svg>
               <span className="ms-3">Community Posts</span>
-            </a>
+            </Link>
           </li>
           <li>
             <Link
@@ -77,7 +78,8 @@ const SideBar = () => {
             </Link>
           </li>
           <li>
-            <a
+            <Link
+              to="/dashboard/Menu"
               href="#"
               className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
@@ -96,10 +98,11 @@ const SideBar = () => {
                 />
               </svg>
               <span className="ms-3">Mess IIITB</span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a
+            <Link
+              to="/dashboard/Leave"
               href="#"
               className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
@@ -118,7 +121,7 @@ const SideBar = () => {
                 />
               </svg>
               <span className="ms-3">Leave Application</span>
-            </a>
+            </Link>
           </li>
         </ul>
       </div>
