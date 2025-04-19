@@ -53,7 +53,7 @@ const Menu = () => {
   const currentDay = weeklyMenu[currentDayIndex];
 
   return (
-    <div className="min-h-screen bg-gray-200 dark:bg-gray-800">
+    <div className="min-h-screen bg-[#0f172a] dark:bg-gray-800">
       <Navbar onLogout={handleLogout} />
       <SideBar />
       <div className="pt-20 sm:pl-64 p-6">
