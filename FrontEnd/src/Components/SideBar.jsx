@@ -93,7 +93,7 @@ const SideBar = () => {
           </li>
           <li>
             <Link
-              to="/dashboard/Menu"
+              to="/dashboard/mess"
               className={`flex items-center p-2 rounded-lg group ${
                 isActive("/dashboard/Menu")
                   ? "bg-gray-700 text-white"

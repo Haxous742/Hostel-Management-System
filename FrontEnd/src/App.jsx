@@ -5,7 +5,7 @@ import Signup from './signup'
 import Dashboard from './dashboard'
 import LandingPage from './LandingPage'
 import Complaints from './complaints'
-import Menu from './Menu'
+import Mess from './mess'
 import NotFound from './NotFound'
 import './App.css'
 import Leave from './Leave'
@@ -20,7 +20,7 @@ const App = () => {
         <Route index element={<LandingPage />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/dashboard/Menu" element={<Menu />} />
+        <Route path="/dashboard/mess" element={<Mess />} />
         <Route path="/dashboard/Community" element={<Community />} />
         <Route path="/dashboard/Complaints" element={<Complaints />} />
         <Route path="/dashboard/Profile" element={<Profile />} />
