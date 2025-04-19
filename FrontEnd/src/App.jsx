@@ -1,16 +1,16 @@
-import React from 'react'
-import { BrowserRouter } from 'react-router-dom'
-import { Route,Routes } from 'react-router-dom'
-import Signup from './signup'
-import Dashboard from './dashboard'
-import LandingPage from './LandingPage'
-import Complaints from './complaints'
-import Mess from './mess'
-import NotFound from './NotFound'
-import './App.css'
-import Leave from './Leave'
-import Community from './Community'
-import Profile from './Profile'
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Signup from './signup';
+import Dashboard from './dashboard';
+import LandingPage from './LandingPage';
+import Complaints from './complaints';
+import Mess from './mess';
+import NotFound from './NotFound';
+import './App.css';
+import Leave from './Leave';
+import Community from './Community';
+import Profile from './Profile';
+import ProtectedRoute from './ProtectedRoute'; // ← import this
 
 const App = () => {
   return (
@@ -19,22 +19,21 @@ const App = () => {
 
         <Route index element={<LandingPage />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/dashboard/mess" element={<Mess />} />
-        <Route path="/dashboard/Community" element={<Community />} />
-        <Route path="/dashboard/Complaints" element={<Complaints />} />
-        <Route path="/dashboard/Profile" element={<Profile />} />
-        <Route path="/dashboard/Leave" element={<Leave />} />
-        <Route path="/dashboard/Leave/Cab-Sharing" element={<Dashboard />} />
 
-      
-        {/* Catch-all route (must be last) */}
+        {/* Protected routes */}
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/dashboard/mess" element={<ProtectedRoute><Mess /></ProtectedRoute>} />
+        <Route path="/dashboard/Community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+        <Route path="/dashboard/Complaints" element={<ProtectedRoute><Complaints /></ProtectedRoute>} />
+        <Route path="/dashboard/Profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/dashboard/Leave" element={<ProtectedRoute><Leave /></ProtectedRoute>} />
+        <Route path="/dashboard/Leave/Cab-Sharing" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+
         <Route path="*" element={<NotFound />} />
-
 
       </Routes>
     </BrowserRouter>
-  )
-}
+  );
+};
 
-export default App
+export default App;

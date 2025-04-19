@@ -18,4 +18,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider= new OAuthProvider("microsoft.com");
-export { auth, provider };
+
+
+import { getStorage } from "firebase/storage";
+
+const storage = getStorage(app);
+
+
+
+export { auth, provider,storage };

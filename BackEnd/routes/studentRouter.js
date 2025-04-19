@@ -7,16 +7,84 @@ import Menu from "../model/menu_model.js";
 const studentRouter = Router();
 
 studentRouter.get("/info", async (req, res) => {
-    const cookie = req.cookies.jwt;
-    const userData = await verifyCookie(cookie);
-    const student = await user.findOne({ email: userData.username });
+    try {
+        const cookie = req.cookies.jwt;
+        if (!cookie) {
+            return res.status(401).json({ message: "No token provided" });
+        }
 
-    if (student) {
-        res.json({ message: "cookie verified", student });
-    } else {
-        res.json({ message: "cookie not verified" });
+        const userData = await verifyCookie(cookie);
+        if (!userData) {
+            return res.status(401).json({ message: "Token verification failed" });
+        }
+
+        const student = await user.findOne({ email: userData.email });
+        
+        if (student) {
+            res.json({ student });
+        } else {
+            res.status(404).json({ message: "Student not found" });
+        }
+    } catch (error) {
+        console.error("Error fetching student data:", error);
+        res.status(500).json({ message: "Server error" });
     }
 });
+
+
+
+
+
+studentRouter.put("/update", async (req, res) => {
+    try {
+        const cookie = req.cookies.jwt;
+        if (!cookie) {
+            return res.status(401).json({ message: "No token provided" });
+        }
+
+        const userData = await verifyCookie(cookie);
+        if (!userData) {
+            return res.status(401).json({ message: "Token verification failed" });
+        }
+
+        const updates = {
+            name: req.body.name,
+            phone: req.body.phoneNo,
+            batch: req.body.branch,
+            email: req.body.emailId,
+            roomNumber: req.body.roomNo,
+            parentEmail: req.body.parentsEmailId,
+            parentPhone: req.body.parentsPhoneNo,
+            avatarURL: req.body.avatarURL,
+        };
+
+        const updatedStudent = await user.findOneAndUpdate(
+            { email: userData.email },
+            updates,
+            { new: true }
+        );
+
+        if (!updatedStudent) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        res.json({ message: "Student updated successfully", student: updatedStudent });
+    } catch (error) {
+        console.error("Error updating student data:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
 
 // POST a new complaint
 studentRouter.post("/complaints/new", async (req, res) => {
@@ -174,7 +242,7 @@ studentRouter.post("/menu/rate", async (req, res) => {
 
 
 
-  
+
   
   studentRouter.get("/menu", async (req, res) => {
     const cookie = req.cookies.jwt;

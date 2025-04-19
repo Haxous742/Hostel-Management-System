@@ -35,6 +35,11 @@ const LandingPage = () => {
                   }
                   else if(response.data.route === "/dashboard"){
                   
+
+                    localStorage.setItem('email', userDetails.email);
+                    localStorage.setItem('name', userDetails.name);
+                    localStorage.setItem('avatarURL', response.data.avatarURL);
+
                     console.log(response.data)
                     navigate("/dashboard");
                   }

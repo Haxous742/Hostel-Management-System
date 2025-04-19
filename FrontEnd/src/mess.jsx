@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from './Components/NavBar';
 import SideBar from './Components/SideBar';
-
+import { FaUtensils, FaHamburger, FaCoffee, FaPizzaSlice, FaStar } from 'react-icons/fa';
 
 const Menu = () => {
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
@@ -119,17 +119,9 @@ const Menu = () => {
         day: currentDay,
         ratings: nestedRatings,
       })
-      .then((res) => {
-        const newRatingEntry = {
-          id: res.data.ratingId || Date.now(),
-          day: currentDay,
-          ratings: nestedRatings,
-          date: new Date().toLocaleDateString(),
-          status: 'Submitted',
-        };
-        console.log('Ratings submitted:', newRatingEntry);
+      .then(() => {
         setSubmitMessage('Ratings submitted successfully!');
-        fetchRatings(currentDay); // Re-fetch updated ratings
+        fetchRatings(currentDay);
       })
       .catch((error) => {
         console.error('Error submitting ratings:', error);
@@ -140,37 +132,47 @@ const Menu = () => {
       });
   };
 
-  const handleLogout = () => {
-    console.log('Logged out');
+  const getIcon = (mealType) => {
+    switch (mealType) {
+      case 'breakfast': return <FaCoffee className="text-yellow-500" />;
+      case 'lunch': return <FaHamburger className="text-red-500" />;
+      case 'snacks': return <FaPizzaSlice className="text-green-500" />;
+      case 'dinner': return <FaUtensils className="text-purple-500" />;
+      default: return null;
+    }
   };
 
   const currentDay = menu[currentDayIndex];
 
   return (
     <div className="min-h-screen bg-gray-800 dark:bg-gray-900">
-      <Navbar onLogout={handleLogout} />
+      <Navbar />
       <SideBar />
       <div className="pt-20 sm:pl-64 p-6">
         <div className="container mx-auto max-w-4xl">
           <div className="bg-gray-200 dark:bg-gray-800 rounded-lg shadow-xl p-6">
             <div className="flex justify-between items-center mb-6">
               <button onClick={handlePrevDay} className="text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-400 transition-colors" disabled={isLoading}>
-                <svg className="w-6 h-6 transform hover:scale-110 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-6 h-6 transform hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
               <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">{currentDay?.day || 'Loading...'}</h1>
               <button onClick={handleNextDay} className="text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-400 transition-colors" disabled={isLoading}>
-                <svg className="w-6 h-6 transform hover:scale-110 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-6 h-6 transform hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                 </svg>
               </button>
             </div>
-            <div className="space-y-4">
+
+            <div className="space-y-8">
               {['breakfast', 'lunch', 'snacks', 'dinner'].map((mealType) => (
-                <div key={mealType} className="space-y-2">
-                  <h2 className="text-xl font-medium text-gray-800 dark:text-gray-200 capitalize">{mealType}</h2>
-                  <ul className="list-disc pl-5 space-y-2">
+                <div key={mealType}>
+                  <div className="flex items-center gap-2 mb-2">
+                    {getIcon(mealType)}
+                    <h2 className="text-xl font-medium text-gray-800 dark:text-gray-200 capitalize">{mealType}</h2>
+                  </div>
+                  <ul className="space-y-2">
                     {currentDay?.[mealType]?.map((foodItem, index) => (
                       <li key={index} className="flex justify-between items-center">
                         <span className="text-gray-800 dark:text-gray-200">{foodItem}</span>
@@ -179,23 +181,30 @@ const Menu = () => {
                             <button
                               key={star}
                               onClick={() => handleRatingChange(mealType, foodItem, star)}
-                              className={`text-2xl transform transition-transform duration-200 hover:scale-125 ${star <= (ratings[currentDay?.day]?.[`${mealType}_${foodItem}`] || 0) ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}
+                              className={`text-xl transform transition-transform hover:scale-125 ${
+                                star <= (ratings[currentDay?.day]?.[`${mealType}_${foodItem}`] || 0)
+                                  ? 'text-red-500 dark:text-red-400'
+                                  : 'text-gray-400 dark:text-gray-500'
+                              }`}
                             >
-                              ★
+                              <FaStar />
                             </button>
                           ))}
                         </div>
                       </li>
                     ))}
                   </ul>
+                  <hr className="my-4 border-gray-400 dark:border-gray-600" />
                 </div>
               ))}
             </div>
+
             {submitMessage && (
-              <p className={`mt-2 text-center ${submitMessage.includes('success') ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+              <p className={`mt-4 text-center ${submitMessage.includes('success') ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                 {submitMessage}
               </p>
             )}
+
             <button
               onClick={handleSubmitRating}
               disabled={isSubmitting || isLoading}

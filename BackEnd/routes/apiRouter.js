@@ -25,7 +25,7 @@ apiRouter.post("/login", async (req, res) => {
             sameSite: "none",
             maxAge: 24 * 60 * 60 * 1000 // 1 day
         });
-        res.json({ message: "login successfull", route: "/dashboard" });
+        res.json({ message: "login successfull", route: "/dashboard" ,avatarURL: user.avatarURL});
     
     }
 

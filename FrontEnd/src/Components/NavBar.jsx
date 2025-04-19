@@ -21,7 +21,7 @@ const Navbar = ({ onLogout }) => {
     <>
       {/* Sidebar for small screens */}
       <div
-        className={`fixed top-0 left-0 w-64 h-full bg-gray-900 text-white transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`}
+        className={`fixed top-0 left-0 w-64 h-full bg-gray-800 text-white transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`}
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <span className="text-lg font-semibold">Menu</span>
@@ -77,13 +77,13 @@ const Navbar = ({ onLogout }) => {
       </div>
 
       {/* Main Navbar */}
-      <nav className="fixed top-0 z-50 w-full bg-gray-900 border-b border-gray-700 shadow-sm">
+      <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700 shadow-sm">
         <div className="px-4 py-3 lg:px-6 lg:pl-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-start rtl:justify-end">
               <button
                 onClick={toggleSidebar}
-                className="inline-flex items-center p-2 text-sm text-white rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 transition-transform duration-200"
+                className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 transition-transform duration-200"
               >
                 <span className="sr-only">Open sidebar</span>
                 <svg
@@ -124,14 +124,15 @@ const Navbar = ({ onLogout }) => {
                   <span className="sr-only">Open user menu</span>
                   <img
                     className="w-9 h-9 rounded-full border-2 border-blue-500 dark:border-blue-400 object-cover transition-transform duration-200 hover:scale-105"
-                    src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                    src={localStorage.getItem('avatarURL')||'../public/img/default-avatar.png'}
+                    
                     alt="user photo"
                   />
                 </button>
                 <div
                   className={`absolute right-0 top-12 z-50 ${
                     isDropdownOpen ? 'block' : 'hidden'
-                  } w-44 my-2 text-base list-none bg-gray-900 rounded-xl shadow-xl dark:bg-gray-700 dark:shadow-gray-800 transition-all duration-300 ease-in-out transform ${
+                  } w-44 my-2 text-base list-none bg-white rounded-xl shadow-xl dark:bg-gray-700 dark:shadow-gray-800 transition-all duration-300 ease-in-out transform ${
                     isDropdownOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
                   }`}
                   id="dropdown-user"
@@ -140,7 +141,7 @@ const Navbar = ({ onLogout }) => {
                     <li>
                       <a
                         href="/dashboard/Profile"
-                        className="block px-4 py-2 text-sm text-white hover:bg-blue-50 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white transition-all duration-150 ease-in-out transform hover:scale-105"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white transition-all duration-150 ease-in-out transform hover:scale-105"
                       >
                         Profile
                       </a>
@@ -148,7 +149,12 @@ const Navbar = ({ onLogout }) => {
                     <li>
                       <a
                         href="#"
-                        onClick={onLogout}
+                        onClick={async()=>{
+                          const response = await fetch('/api/logout', {
+                            method: 'POST',
+                            credentials: 'include',
+                          });
+                        }}
                         className="inline-block mx-4 mt-1 mb-2 px-4 py-1 text-sm text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 rounded-lg transition-all duration-150 ease-in-out transform hover:scale-105"
                       >
                         Log out
