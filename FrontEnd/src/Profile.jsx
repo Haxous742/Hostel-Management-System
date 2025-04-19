@@ -25,6 +25,8 @@ const Profile = () => {
   const [isPersonalPopupOpen, setIsPersonalPopupOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [loading, setLoading] = useState(false);
+
 
   // Fetch profile data on component mount
   useEffect(() => {
@@ -75,32 +77,32 @@ const Profile = () => {
 
   const handleUpload = async () => {
     if (selectedFile) {
+      setLoading(true);
       const fileRef = ref(storage, `profileImages/${profileData.emailId}`);
       try {
         await uploadBytes(fileRef, selectedFile);
         const downloadURL = await getDownloadURL(fileRef);
-
-        // Set the image in the profile data (and optionally save to backend too)
+  
         setProfileData((prev) => ({ ...prev, profileImage: downloadURL }));
-
-        // You can also send the new avatar URL to the backend if needed:
+  
         await axios.put(
           "/api/student/update",
           { avatarURL: downloadURL },
           { withCredentials: true }
         );
-        localStorage.setItem("avatarURL", downloadURL); // Store in local storage
-
+        localStorage.setItem("avatarURL", downloadURL);
+  
         setIsProfilePopupOpen(false);
         setSelectedFile(null);
         setPreviewImage(null);
-
         console.log("Upload successful:", downloadURL);
       } catch (error) {
         console.error("Firebase upload error:", error);
       }
+      setLoading(false);
     }
   };
+  
 
   const handleDelete = async () => {
     setSelectedFile(null);
@@ -247,11 +249,36 @@ const Profile = () => {
                         )}
                       </div>
                       <button
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded mt-2"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded flex justify-center items-center"
                         onClick={handleUpload}
+                        disabled={loading}
                       >
-                        Save
+                        {loading ? (
+                          <svg
+                            className="animate-spin h-5 w-5 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8v8z"
+                            ></path>
+                          </svg>
+                        ) : (
+                          "Save"
+                        )}
                       </button>
+
 
                       <button
                         className="w-full bg-red-600 hover:bg-blue-700 text-white font-semibold py-2 rounded mt-5"
