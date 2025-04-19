@@ -5,7 +5,7 @@ import { verifyCookie } from "../service/auth.js";
 
 const studentRouter = Router();
 
-studentRouter.post("/info", async (req, res) => {
+studentRouter.get("/info", async (req, res) => {
     const cookie = req.cookies.jwt;
     const userData = await verifyCookie(cookie);
     const student = await user.findOne({ email: userData.username });
@@ -62,12 +62,15 @@ studentRouter.get("/complaints/show", async (req, res) => {
         }
         const complaints = await Complaint.find({ userEmail: student.email }).sort({ date: -1 });
         
-        console.log(complaints);
         res.status(200).json(complaints);
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
+
+
+
 
 export default studentRouter;
