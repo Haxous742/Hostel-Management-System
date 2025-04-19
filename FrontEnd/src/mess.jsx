@@ -1,153 +1,207 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from './Components/NavBar';
 import SideBar from './Components/SideBar';
 
+
 const Menu = () => {
   const [currentDayIndex, setCurrentDayIndex] = useState(0);
-  const [breakfastRating, setBreakfastRating] = useState(0);
-  const [lunchRating, setLunchRating] = useState(0);
-  const [snacksRating, setSnacksRating] = useState(0);
-  const [dinnerRating, setDinnerRating] = useState(0);
+  const [menu, setMenu] = useState([]);
+  const [ratings, setRatings] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
-  const weeklyMenu = [
-    { day: 'Monday', breakfast: 'Dosa, Idly', lunch: 'Rice, Dal, Veg Curry', snacks: 'Samosa, Tea', dinner: 'Chapatis, Paneer Masala' },
-    { day: 'Tuesday', breakfast: 'Poha, Tea', lunch: 'Pulao, Raita', snacks: 'Pakora, Coffee', dinner: 'Noodles, Manchurian' },
-    { day: 'Wednesday', breakfast: 'Upma, Coffee', lunch: 'Biryani, Salad', snacks: 'Biscuits, Juice', dinner: 'Paratha, Aloo Gobi' },
-    { day: 'Thursday', breakfast: 'Vada, Sambar', lunch: 'Rice, Fish Curry', snacks: 'Sandwich, Milkshake', dinner: 'Pizza, Soup' },
-    { day: 'Friday', breakfast: 'Pancakes, Juice', lunch: 'Khichdi, Papad', snacks: 'Dhokla, Chai', dinner: 'Roti, Chicken Curry' },
-    { day: 'Saturday', breakfast: 'Omelette, Toast', lunch: 'Fried Rice, Veg Stir-fry', snacks: 'Spring Rolls, Soda', dinner: 'Pasta, Garlic Bread' },
-    { day: 'Sunday', breakfast: 'Idli, Chutney', lunch: 'Thali (Rice, Dal, Sabzi)', snacks: 'Murukku, Coffee', dinner: 'Dosa, Chutney' },
-  ];
+  useEffect(() => {
+    axios.defaults.withCredentials = true;
+  }, []);
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      setIsLoading(true);
+      setSubmitMessage('');
+      try {
+        const response = await axios.get('/api/student/menu');
+        const fetchedMenu = response.data.menu;
+        setMenu(fetchedMenu);
+        const today = new Date();
+        const dayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+        const dayIndex = fetchedMenu.findIndex((day) => day.day === dayName);
+        setCurrentDayIndex(dayIndex !== -1 ? dayIndex : 0);
+      } catch (error) {
+        console.error('Error fetching menu:', error);
+        setSubmitMessage(`Failed to fetch menu. ${error.response?.data?.message || 'Please try again.'}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchMenu();
+  }, []);
+
+  const fetchRatings = async (day) => {
+    setIsLoading(true);
+    setSubmitMessage('');
+    if (day) {
+      try {
+        const response = await axios.get(`/api/student/menu/rate/${day}`);
+        const fetchedRatings = response.data.ratings;
+        const flatRatings = {
+          [day]: {
+            ...fetchedRatings.breakfast.reduce((acc, item) => ({ ...acc, [`breakfast_${item.foodItem}`]: item.rating }), {}),
+            ...fetchedRatings.lunch.reduce((acc, item) => ({ ...acc, [`lunch_${item.foodItem}`]: item.rating }), {}),
+            ...fetchedRatings.snacks.reduce((acc, item) => ({ ...acc, [`snacks_${item.foodItem}`]: item.rating }), {}),
+            ...fetchedRatings.dinner.reduce((acc, item) => ({ ...acc, [`dinner_${item.foodItem}`]: item.rating }), {}),
+          },
+        };
+        setRatings((prev) => ({ ...prev, ...flatRatings }));
+      } catch (error) {
+        console.error('Error fetching ratings:', error);
+        setSubmitMessage(`Failed to fetch ratings. ${error.response?.data?.message || 'Please try again.'}`);
+      }
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    if (menu[currentDayIndex]?.day) {
+      fetchRatings(menu[currentDayIndex].day);
+    }
+  }, [currentDayIndex, menu]);
 
   const handlePrevDay = () => {
-    setCurrentDayIndex((prev) => (prev > 0 ? prev - 1 : weeklyMenu.length - 1));
+    setCurrentDayIndex((prev) => (prev > 0 ? prev - 1 : menu.length - 1));
   };
 
   const handleNextDay = () => {
-    setCurrentDayIndex((prev) => (prev < weeklyMenu.length - 1 ? prev + 1 : 0));
+    setCurrentDayIndex((prev) => (prev < menu.length - 1 ? prev + 1 : 0));
+  };
+
+  const handleRatingChange = (mealType, foodItem, rating) => {
+    const currentDay = menu[currentDayIndex]?.day;
+    setRatings((prev) => ({
+      ...prev,
+      [currentDay]: {
+        ...(prev[currentDay] || {}),
+        [`${mealType}_${foodItem}`]: rating,
+      },
+    }));
   };
 
   const handleSubmitRating = () => {
     setIsSubmitting(true);
-    setTimeout(() => {
-      console.log(`Submitted ratings for ${weeklyMenu[currentDayIndex].day}:`);
-      console.log(`Breakfast: ${breakfastRating} stars`);
-      console.log(`Lunch: ${lunchRating} stars`);
-      console.log(`Snacks: ${snacksRating} stars`);
-      console.log(`Dinner: ${dinnerRating} stars`);
-      setBreakfastRating(0);
-      setLunchRating(0);
-      setSnacksRating(0);
-      setDinnerRating(0);
+    setSubmitMessage('');
+    const currentDay = menu[currentDayIndex]?.day;
+    const dayRatings = ratings[currentDay] || {};
+
+    const nestedRatings = {
+      breakfast: Object.entries(dayRatings)
+        .filter(([key]) => key.startsWith('breakfast_'))
+        .map(([key, rating]) => ({ foodItem: key.split('_')[1], rating })),
+      lunch: Object.entries(dayRatings)
+        .filter(([key]) => key.startsWith('lunch_'))
+        .map(([key, rating]) => ({ foodItem: key.split('_')[1], rating })),
+      snacks: Object.entries(dayRatings)
+        .filter(([key]) => key.startsWith('snacks_'))
+        .map(([key, rating]) => ({ foodItem: key.split('_')[1], rating })),
+      dinner: Object.entries(dayRatings)
+        .filter(([key]) => key.startsWith('dinner_'))
+        .map(([key, rating]) => ({ foodItem: key.split('_')[1], rating })),
+    };
+
+    if (Object.values(nestedRatings).every((arr) => arr.length === 0)) {
       setIsSubmitting(false);
-    }, 500);
+      setSubmitMessage('No ratings to submit');
+      return;
+    }
+
+    axios
+      .post('/api/student/menu/rate', {
+        day: currentDay,
+        ratings: nestedRatings,
+      })
+      .then((res) => {
+        const newRatingEntry = {
+          id: res.data.ratingId || Date.now(),
+          day: currentDay,
+          ratings: nestedRatings,
+          date: new Date().toLocaleDateString(),
+          status: 'Submitted',
+        };
+        console.log('Ratings submitted:', newRatingEntry);
+        setSubmitMessage('Ratings submitted successfully!');
+        fetchRatings(currentDay); // Re-fetch updated ratings
+      })
+      .catch((error) => {
+        console.error('Error submitting ratings:', error);
+        setSubmitMessage(`Failed to submit ratings. ${error.response?.data?.message || 'Please try again.'}`);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
-  // Dummy onLogout for Navbar
   const handleLogout = () => {
     console.log('Logged out');
   };
 
-  const currentDay = weeklyMenu[currentDayIndex];
+  const currentDay = menu[currentDayIndex];
 
   return (
-    <div className="min-h-screen bg-gray-200 dark:bg-gray-800">
+    <div className="min-h-screen bg-gray-800 dark:bg-gray-900">
       <Navbar onLogout={handleLogout} />
       <SideBar />
       <div className="pt-20 sm:pl-64 p-6">
         <div className="container mx-auto max-w-4xl">
-          <div className="bg-gray-800 dark:bg-gray-900 rounded-lg shadow-xl p-6">
+          <div className="bg-gray-200 dark:bg-gray-800 rounded-lg shadow-xl p-6">
             <div className="flex justify-between items-center mb-6">
-              <button onClick={handlePrevDay} className="text-white dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors">
+              <button onClick={handlePrevDay} className="text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-400 transition-colors" disabled={isLoading}>
                 <svg className="w-6 h-6 transform hover:scale-110 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <h1 className="text-2xl font-semibold text-white dark:text-gray-100">{currentDay.day}</h1>
-              <button onClick={handleNextDay} className="text-white dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors">
+              <h1 className="text-2xl font-semibold text-gray-800 dark:text-gray-200">{currentDay?.day || 'Loading...'}</h1>
+              <button onClick={handleNextDay} className="text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-400 transition-colors" disabled={isLoading}>
                 <svg className="w-6 h-6 transform hover:scale-110 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                 </svg>
               </button>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-white dark:text-gray-300 font-medium mb-2">Breakfast</p>
-                  <p className="text-white dark:text-gray-200">{currentDay.breakfast}</p>
+            <div className="space-y-4">
+              {['breakfast', 'lunch', 'snacks', 'dinner'].map((mealType) => (
+                <div key={mealType} className="space-y-2">
+                  <h2 className="text-xl font-medium text-gray-800 dark:text-gray-200 capitalize">{mealType}</h2>
+                  <ul className="list-disc pl-5 space-y-2">
+                    {currentDay?.[mealType]?.map((foodItem, index) => (
+                      <li key={index} className="flex justify-between items-center">
+                        <span className="text-gray-800 dark:text-gray-200">{foodItem}</span>
+                        <div className="flex space-x-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              onClick={() => handleRatingChange(mealType, foodItem, star)}
+                              className={`text-2xl transform transition-transform duration-200 hover:scale-125 ${star <= (ratings[currentDay?.day]?.[`${mealType}_${foodItem}`] || 0) ? 'text-red-500 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'}`}
+                            >
+                              ★
+                            </button>
+                          ))}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <div className="flex space-x-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      onClick={() => setBreakfastRating(star)}
-                      className={`text-2xl transform transition-transform duration-200 hover:scale-125 ${star <= breakfastRating ? 'text-red-500 dark:text-red-400' : 'text-gray-300 dark:text-gray-500'}`}
-                    >
-                      ★
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-white dark:text-gray-300 font-medium mb-2">Lunch</p>
-                  <p className="text-white dark:text-gray-200">{currentDay.lunch}</p>
-                </div>
-                <div className="flex space-x-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      onClick={() => setLunchRating(star)}
-                      className={`text-2xl transform transition-transform duration-200 hover:scale-125 ${star <= lunchRating ? 'text-red-500 dark:text-red-400' : 'text-gray-300 dark:text-gray-500'}`}
-                    >
-                      ★
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-white dark:text-gray-300 font-medium mb-2">Snacks</p>
-                  <p className="text-white dark:text-gray-200">{currentDay.snacks}</p>
-                </div>
-                <div className="flex space-x-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      onClick={() => setSnacksRating(star)}
-                      className={`text-2xl transform transition-transform duration-200 hover:scale-125 ${star <= snacksRating ? 'text-red-500 dark:text-red-400' : 'text-gray-300 dark:text-gray-500'}`}
-                    >
-                      ★
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-white dark:text-gray-300 font-medium mb-2">Dinner</p>
-                  <p className="text-white dark:text-gray-200">{currentDay.dinner}</p>
-                </div>
-                <div className="flex space-x-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      onClick={() => setDinnerRating(star)}
-                      className={`text-2xl transform transition-transform duration-200 hover:scale-125 ${star <= dinnerRating ? 'text-red-500 dark:text-red-400' : 'text-gray-300 dark:text-gray-500'}`}
-                    >
-                      ★
-                    </button>
-                  ))}
-                </div>
-              </div>
+              ))}
             </div>
+            {submitMessage && (
+              <p className={`mt-2 text-center ${submitMessage.includes('success') ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                {submitMessage}
+              </p>
+            )}
             <button
               onClick={handleSubmitRating}
-              disabled={isSubmitting}
-              className={`mt-6 w-full py-2 rounded-lg font-semibold text-white transition-colors ${isSubmitting ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed' : 'bg-blue-600 dark:bg-blue-500 hover:bg-blue-700 dark:hover:bg-blue-600'}`}
+              disabled={isSubmitting || isLoading}
+              className={`mt-6 w-full py-2 rounded-lg font-semibold text-gray-800 dark:text-gray-200 transition-colors ${isSubmitting || isLoading ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed' : 'bg-blue-400 dark:bg-blue-600 hover:bg-blue-500 dark:hover:bg-blue-500'}`}
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Rating'}
+              {isSubmitting ? 'Submitting...' : isLoading ? 'Loading...' : 'Submit Rating'}
             </button>
           </div>
         </div>
