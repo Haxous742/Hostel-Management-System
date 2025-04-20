@@ -6,6 +6,12 @@ import LeaveRequest from "../model/leave_model.js";
 import TempLeaveRequest from "../model/tempLeave_model.js";
 import Rating from "../model/rating_model.js";
 import Menu from "../model/menu_model.js";
+import sendMail from "../service/email.js";
+
+
+
+
+
 const studentRouter = Router();
 
 studentRouter.get("/info", async (req, res) => {
@@ -317,7 +323,24 @@ studentRouter.post('/leave/new', async (req, res) => {
     });
 
     await newTempLeave.save();
-    res.status(200).json({ message: "OTP sent. Please verify to confirm leave.", leaveId: newTempLeave._id });
+
+    //send mail
+
+    const subject = "Leave Request OTP";
+    const body = `Dear Parent/Guardian,\n\n` +
+      `I hope this email finds you well. This is an automated email generated to request your permission for ${student.name} to take leave as per the details mentioned below:\n\n` +
+      `Student Information:\n` +
+      `Name: ${student.name}\n` +
+      `Batch: ${student.batch}\n` +
+      `Leave Duration: From ${startDate} to ${endDate}\n` +
+      `Reason for Leave: ${reason}\n\n` +
+      `To proceed with the leave request, please confirm your approval by sharing the following OTP only with your ward if you allow this leave: ${newTempLeave.otp}.\n\n` +
+      `If you do not approve this request, kindly disregard this email. Should you have any concerns or require further information, feel free to reach out.\n\n` +
+      `We appreciate your cooperation.`;
+
+    await sendMail(student.parentEmail,subject,body);
+
+    res.status(200).json({ message: "OTP sent.", leaveId: newTempLeave._id });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
