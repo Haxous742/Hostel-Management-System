@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 const leaveRequestSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
     reason: { type: String, required: true },
     leaveType: { type: String, required: true },
     startDate: { type: Date, required: true },
