@@ -31,7 +31,8 @@ const userSchema = new mongooose.Schema({
     },
     avatarURL: {
         type: String,
-        required: false
+        required: false,
+        default:""
     },
     gender: {
         type: String,
