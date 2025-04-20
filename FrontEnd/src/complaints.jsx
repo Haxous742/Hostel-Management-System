@@ -158,14 +158,24 @@ const Complaints = () => {
                             {item.status}
                           </span>
                           <button
-                            onClick={() => {
-                              const updatedComplaintsList = complaintsList.filter((_, i) => i !== idx);
+                          onClick={async () => {
+                            try {
+                              const res=await axios.post('/api/student/complaints/delete', {
+                                complaintId: item._id,
+                              }, { withCredentials: true });
+                              console.log(res,"Heklo");
+                              const updatedComplaintsList = complaintsList.filter((c) => c._id !== item._id);
                               setComplaintsList(updatedComplaintsList);
-                            }}
-                            className="bg-red-600 text-white px-3 py-1 text-xs rounded-lg hover:bg-red-700 transition-all"
-                          >
-                            Delete Complaint
-                          </button>
+                            } catch (err) {
+                              console.error("Error deleting complaint:", err);
+                              alert("Failed to delete complaint.");
+                            }
+                          }}
+                          className="bg-red-600 text-white px-3 py-1 text-xs rounded-lg hover:bg-red-700 transition-all"
+                        >
+                          Delete Complaint
+                        </button>
+
                         </div>
                       </div>
                     ))}

@@ -151,6 +151,48 @@ studentRouter.get("/complaints/show", async (req, res) => {
 
 
 
+studentRouter.post('/complaints/delete', async (req, res) => {
+  const cookie = req.cookies.jwt;
+  const { complaintId } = req.body;
+  console.log("Complaint ID:", complaintId);
+  try {
+    const userData = await verifyCookie(cookie);
+    const student = await user.findOne({ email: userData.email });
+
+    if (!student) return res.status(401).json({ message: "User not found" });
+
+    const complaint = await Complaint.findOne({ _id: complaintId});
+
+    console.log(complaint);
+
+    if (!complaint) return res.status(404).json({ message: "Complaint not found" });
+
+    await Complaint.deleteOne({ _id: complaintId});
+
+    res.status(200).json({ message: "Complaint deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting complaint:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 studentRouter.post("/menu/rate", async (req, res) => {
     const cookie = req.cookies.jwt;
     const userData = await verifyCookie(cookie);
