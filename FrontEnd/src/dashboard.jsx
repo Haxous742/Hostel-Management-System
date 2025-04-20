@@ -35,7 +35,7 @@ const Dashboard = () => {
     const fetchPosts = async () => {
       try {
         setLoadingPosts(true);
-        const response = await axios.get('/api/community-posts');
+        const response = await axios.get('/api/student/community-posts');
         const posts = response.data || mockPosts;
         
         // Filter posts that have #Admin or #Event tags
