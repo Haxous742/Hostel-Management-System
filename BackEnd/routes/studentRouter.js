@@ -421,6 +421,33 @@ studentRouter.post('/leave/verify', async (req, res) => {
 
 
 
+studentRouter.post('/leave/delete', async (req, res) => {
+  console.log("Delete leave request endpoint hit");
+  const cookie = req.cookies.jwt;
+  const { id } = req.body;
+  console.log("Leave ID:", id);
+  try {
+    const userData = await verifyCookie(cookie);
+    const student = await user.findOne({ email: userData.email });
+
+    if (!student) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    const leave = await LeaveRequest.findOne({ _id: id, userId: student._id });
+
+    if (!leave) {
+      return res.status(404).json({ message: "Leave request not found" });
+    }
+
+    await LeaveRequest.deleteOne({ _id: id, userId: student._id });
+
+    res.status(200).json({ message: "Leave request deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting leave request:", err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 
 

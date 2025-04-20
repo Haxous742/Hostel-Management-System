@@ -89,6 +89,23 @@ const LeavePortal = () => {
     }
   };
 
+
+// send data as body
+  const handleDelete = (id) => async () => {
+    try {
+      const res = await axios.post(`/api/student/leave/delete`, {
+         id } );
+      if (res.status === 200) {
+        setLeaveList(leaveList.filter((item) => item._id !== id));
+      } else {
+        alert('Failed to delete leave request.');
+      }
+    } catch (err) {
+      console.error('Error deleting leave request:', err);
+      alert('Failed to delete leave request.');
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
       <Navbar />
@@ -199,10 +216,7 @@ const LeavePortal = () => {
                             {item.status}
                           </span>
                           <button
-                            onClick={() => {
-                              const updatedLeaveList = leaveList.filter((_, i) => i !== idx);
-                              setLeaveList(updatedLeaveList);
-                            }}
+                            onClick={handleDelete(item._id)}
                             className="bg-red-600 text-white px-3 py-1 text-xs rounded-lg hover:bg-red-700 transition-all"
                           >
                             Delete Request
