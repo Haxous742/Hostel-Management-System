@@ -20,8 +20,7 @@ const Community = () => {
 
   const hashtagSuggestions = [
     'Announcement', 'Event', 'Question', 'General', 
-    'Hostel', 'Mess', 'Academic', 'Social', 'Admin'
-  ];
+    'Hostel', 'Mess', 'Academic', 'Social',  ];
 
   useEffect(() => {
     const fetchPosts = async () => {

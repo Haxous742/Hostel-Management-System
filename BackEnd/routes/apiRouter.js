@@ -188,4 +188,9 @@ import studentRouter from "./studentRouter.js";
 apiRouter.use("/student", studentRouter);
 
 
+import adminRouter from "./adminRouter.js";
+
+apiRouter.use("/admin", adminRouter);
+
+
 export default apiRouter;
