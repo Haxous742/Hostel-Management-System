@@ -121,7 +121,7 @@ const Complaints = () => {
                   </p>
                 ) : (
                   <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
-                    {complaintsList.map((item) => (
+                    {complaintsList.map((item, idx) => (
                       <div
                         key={item.id}
                         className="p-4 bg-gray-700 rounded-lg border border-gray-600 hover:bg-gray-600 transition-colors"
@@ -147,7 +147,7 @@ const Complaints = () => {
                           <span className="text-sm text-gray-400">{item.date}</span>
                         </div>
                         <p className="text-gray-300">{item.text}</p>
-                        <div className="mt-2">
+                        <div className="mt-2 flex justify-between items-center">
                           <span
                             className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
                               item.status === 'Pending'
@@ -157,6 +157,15 @@ const Complaints = () => {
                           >
                             {item.status}
                           </span>
+                          <button
+                            onClick={() => {
+                              const updatedComplaintsList = complaintsList.filter((_, i) => i !== idx);
+                              setComplaintsList(updatedComplaintsList);
+                            }}
+                            className="bg-red-600 text-white px-3 py-1 text-xs rounded-lg hover:bg-red-700 transition-all"
+                          >
+                            Delete Complaint
+                          </button>
                         </div>
                       </div>
                     ))}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from './Components/NavBar';
 import SideBar from './Components/SideBar';
+import DeleteButton from './Components/DeleteButton';
 
 const LeavePortal = () => {
   const [leaveType, setLeaveType] = useState('Medical');
@@ -185,7 +186,7 @@ const LeavePortal = () => {
                           </span>
                         </div>
                         <p className="text-gray-300">{item.reason}</p>
-                        <div className="mt-2">
+                        <div className="mt-2 flex justify-between items-center">
                           <span
                             className={`px-2 py-1 text-xs rounded-full font-semibold ${
                               item.status === 'Pending'
@@ -197,6 +198,15 @@ const LeavePortal = () => {
                           >
                             {item.status}
                           </span>
+                          <button
+                            onClick={() => {
+                              const updatedLeaveList = leaveList.filter((_, i) => i !== idx);
+                              setLeaveList(updatedLeaveList);
+                            }}
+                            className="bg-red-600 text-white px-3 py-1 text-xs rounded-lg hover:bg-red-700 transition-all"
+                          >
+                            Delete Request
+                          </button>
                         </div>
                       </div>
                     ))}
