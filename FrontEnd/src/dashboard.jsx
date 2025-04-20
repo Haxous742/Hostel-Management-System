@@ -382,7 +382,7 @@ const Dashboard = () => {
             
             {/* Right Column - Today's Menu & Birthdays */}
             <div className="lg:col-span-1">
-              {/* Today's Meal - UPDATED COMPONENT */}
+              {/* Today's Meal - Updated Component */}
               <div className="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 mb-6">
                 <h2 className="text-xl font-semibold text-white mb-4">Today's Meals</h2>
                 
@@ -405,7 +405,7 @@ const Dashboard = () => {
                     </div>
                     
                     {/* Meal Navigation Tabs with Horizontal Scroll */}
-                    <div className="overflow-x-auto scrollbar-hide mb-4">
+                    <div className="overflow-x-auto meal-tabs mb-4">
                       <div className="flex space-x-3 min-w-max pb-1">
                         {['breakfast', 'lunch', 'snacks', 'dinner'].map((mealType) => (
                           <button
