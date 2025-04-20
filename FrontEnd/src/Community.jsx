@@ -182,6 +182,16 @@ const Community = () => {
   };
 
   const adminGradient = "from-amber-500 to-red-600";
+  const eventGradient = "from-blue-500 to-purple-600";
+
+  const getPostGradient = (hashtags) => {
+    const hasAnnouncement = hashtags.some(tag => tag.toLowerCase() === '#announcement');
+    const hasEvent = hashtags.some(tag => tag.toLowerCase() === '#event');
+    
+    if (hasAnnouncement) return adminGradient; // Announcement takes precedence if both are present
+    if (hasEvent) return eventGradient;
+    return '';
+  };
 
   return (
     <div className="bg-gray-900 min-h-screen">
@@ -233,120 +243,131 @@ const Community = () => {
                 <p className="mt-2 text-gray-400">Loading posts...</p>
               </div>
             ) : filterPosts().length > 0 ? (
-              filterPosts().map((post, index) => (
-                <div 
-                  key={post._id || index} 
-                  className={`${post.isAdminPost ? `p-[3px] bg-gradient-to-r ${adminGradient}` : ''} rounded-lg transition-all duration-200 hover:shadow-xl`}
-                >
-                  <div className="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
-                    <div className="flex items-start gap-3">
-                      <img 
-                        src={post.author.avatarURL} 
-                        alt={post.author.name} 
-                        className="w-10 h-10 rounded-full object-cover border-2 border-gray-700"
-                      />
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <span className="font-medium text-white">{post.author.name}</span>
-                          <span className="text-xs text-gray-400">
-                            {new Date(post.timestamp).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </span>
-                        </div>
-                        <p className="text-gray-300 mt-2 whitespace-pre-wrap">{post.content}</p>
-                        
-                        {/* Display post image if available */}
-                        {post.imageURL && (
-                          <div className="mt-3 mb-3">
-                            <img 
-                              src={post.imageURL} 
-                              alt="Post attachment" 
-                              className="max-h-80 rounded-lg object-contain mx-auto"
-                            />
-                          </div>
-                        )}
-                        
-                        <div className="flex flex-wrap gap-2 mt-3">
-                          {post.hashtags.map((tag, i) => (
-                            <span 
-                              key={i} 
-                              className={`text-xs px-2 py-1 rounded-full ${
-                                tag.toLowerCase() === '#announcement' 
-                                  ? `bg-gradient-to-r ${adminGradient} text-white font-medium` 
-                                  : 'bg-gray-700 text-blue-400'
-                              }`}
-                            >
-                              {tag}
+              filterPosts().map((post, index) => {
+                const gradientBorder = getPostGradient(post.hashtags);
+                return (
+                  <div 
+                    key={post._id || index} 
+                    className={`${gradientBorder ? `p-[3px] bg-gradient-to-r ${gradientBorder}` : ''} rounded-lg transition-all duration-200 hover:shadow-xl`}
+                  >
+                    <div className="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
+                      <div className="flex items-start gap-3">
+                        <img 
+                          src={post.author.avatarURL} 
+                          alt={post.author.name} 
+                          className="w-10 h-10 rounded-full object-cover border-2 border-gray-700"
+                        />
+                        <div className="flex-1">
+                          <div className="flex justify-between items-start">
+                            <span className="font-medium text-white">{post.author.name}</span>
+                            <span className="text-xs text-gray-400">
+                              {new Date(post.timestamp).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
                             </span>
-                          ))}
-                        </div>
-                        
-                        {/* Improved vote buttons */}
-                        <div className="flex items-center mt-4 space-x-6">
-                          {/* Upvote button */}
-                          <button 
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
-                              post.userVote === 'upvote' 
-                                ? 'bg-green-500/20 text-green-500 border border-green-500' 
-                                : 'text-gray-400 hover:text-green-500 hover:bg-green-500/10 hover:border-green-500/50 border border-transparent'
-                            } transition-all duration-200`}
-                            onClick={() => handleVote(post._id, 'upvote')}
-                          >
-                            <svg 
-                              className="w-5 h-5" 
-                              fill={post.userVote === 'upvote' ? "currentColor" : "none"} 
-                              stroke="currentColor" 
-                              viewBox="0 0 24 24" 
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path 
-                                strokeLinecap="round" 
-                                strokeLinejoin="round" 
-                                strokeWidth="2" 
-                                d="M5 15l7-7 7 7"
-                              />
-                            </svg>
-                            <span>{post.upvotes}</span>
-                            <span className="ml-1">Upvote</span>
-                          </button>
+                          </div>
+                          <p className="text-gray-300 mt-2 whitespace-pre-wrap">{post.content}</p>
                           
-                          {/* Downvote button */}
-                          <button 
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
-                              post.userVote === 'downvote' 
-                                ? 'bg-red-500/20 text-red-500 border border-red-500' 
-                                : 'text-gray-400 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/50 border border-transparent'
-                            } transition-all duration-200`}
-                            onClick={() => handleVote(post._id, 'downvote')}
-                          >
-                            <svg 
-                              className="w-5 h-5" 
-                              fill={post.userVote === 'downvote' ? "currentColor" : "none"} 
-                              stroke="currentColor" 
-                              viewBox="0 0 24 24" 
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path 
-                                strokeLinecap="round" 
-                                strokeLinejoin="round" 
-                                strokeWidth="2" 
-                                d="M19 9l-7 7-7-7"
+                          {/* Display post image if available */}
+                          {post.imageURL && (
+                            <div className="mt-3 mb-3">
+                              <img 
+                                src={post.imageURL} 
+                                alt="Post attachment" 
+                                className="max-h-80 rounded-lg object-contain mx-auto"
                               />
-                            </svg>
-                            <span>{post.downvotes}</span>
-                            <span className="ml-1">Downvote</span>
-                          </button>
+                            </div>
+                          )}
+                          
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {post.hashtags.map((tag, i) => {
+                              const isAnnouncement = tag.toLowerCase() === '#announcement';
+                              const isEvent = tag.toLowerCase() === '#event';
+                              
+                              let tagClassName = 'text-xs px-2 py-1 rounded-full ';
+                              
+                              if (isAnnouncement) {
+                                tagClassName += `bg-gradient-to-r ${adminGradient} text-white font-medium`;
+                              } else if (isEvent) {
+                                tagClassName += `bg-gradient-to-r ${eventGradient} text-white font-medium`;
+                              } else {
+                                tagClassName += 'bg-gray-700 text-blue-400';
+                              }
+                              
+                              return (
+                                <span key={i} className={tagClassName}>
+                                  {tag}
+                                </span>
+                              );
+                            })}
+                          </div>
+                          
+                          {/* Improved vote buttons */}
+                          <div className="flex items-center mt-4 space-x-6">
+                            {/* Upvote button */}
+                            <button 
+                              className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
+                                post.userVote === 'upvote' 
+                                  ? 'bg-green-500/20 text-green-500 border border-green-500' 
+                                  : 'text-gray-400 hover:text-green-500 hover:bg-green-500/10 hover:border-green-500/50 border border-transparent'
+                              } transition-all duration-200`}
+                              onClick={() => handleVote(post._id, 'upvote')}
+                            >
+                              <svg 
+                                className="w-5 h-5" 
+                                fill={post.userVote === 'upvote' ? "currentColor" : "none"} 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24" 
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path 
+                                  strokeLinecap="round" 
+                                  strokeLinejoin="round" 
+                                  strokeWidth="2" 
+                                  d="M5 15l7-7 7 7"
+                                />
+                              </svg>
+                              <span>{post.upvotes}</span>
+                              <span className="ml-1">Upvote</span>
+                            </button>
+                            
+                            {/* Downvote button */}
+                            <button 
+                              className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
+                                post.userVote === 'downvote' 
+                                  ? 'bg-red-500/20 text-red-500 border border-red-500' 
+                                  : 'text-gray-400 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/50 border border-transparent'
+                              } transition-all duration-200`}
+                              onClick={() => handleVote(post._id, 'downvote')}
+                            >
+                              <svg 
+                                className="w-5 h-5" 
+                                fill={post.userVote === 'downvote' ? "currentColor" : "none"} 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24" 
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path 
+                                  strokeLinecap="round" 
+                                  strokeLinejoin="round" 
+                                  strokeWidth="2" 
+                                  d="M19 9l-7 7-7-7"
+                                />
+                              </svg>
+                              <span>{post.downvotes}</span>
+                              <span className="ml-1">Downvote</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="text-center py-8 bg-gray-800 rounded-lg">
                 <svg className="mx-auto h-12 w-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -437,26 +458,37 @@ const Community = () => {
                   </div>
                   
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {hashtagSuggestions.map((tag) => (
-                      <button
-                        key={tag}
-                        type="button"
-                        className={`text-xs ${
-                          tag === 'Announcement' 
-                            ? `bg-gradient-to-r ${adminGradient}` 
-                            : 'bg-gray-700 hover:bg-gray-600'
-                        } text-white px-2 py-1 rounded-full transition-colors`}
-                        onClick={() => {
-                          const newTag = tag.startsWith('#') ? tag : `#${tag}`;
-                          const currentTags = hashtags.split(',').map(t => t.trim()).filter(t => t);
-                          if (!currentTags.includes(newTag)) {
-                            setHashtags(prev => prev ? `${prev}, ${newTag}` : newTag);
-                          }
-                        }}
-                      >
-                        #{tag}
-                      </button>
-                    ))}
+                    {hashtagSuggestions.map((tag) => {
+                      const isAnnouncement = tag === 'Announcement';
+                      const isEvent = tag === 'Event';
+                      
+                      let buttonClassName = 'text-xs text-white px-2 py-1 rounded-full transition-colors ';
+                      
+                      if (isAnnouncement) {
+                        buttonClassName += `bg-gradient-to-r ${adminGradient}`;
+                      } else if (isEvent) {
+                        buttonClassName += `bg-gradient-to-r ${eventGradient}`;
+                      } else {
+                        buttonClassName += 'bg-gray-700 hover:bg-gray-600';
+                      }
+                      
+                      return (
+                        <button
+                          key={tag}
+                          type="button"
+                          className={buttonClassName}
+                          onClick={() => {
+                            const newTag = tag.startsWith('#') ? tag : `#${tag}`;
+                            const currentTags = hashtags.split(',').map(t => t.trim()).filter(t => t);
+                            if (!currentTags.includes(newTag)) {
+                              setHashtags(prev => prev ? `${prev}, ${newTag}` : newTag);
+                            }
+                          }}
+                        >
+                          #{tag}
+                        </button>
+                      );
+                    })}
                   </div>
                   
                   <div className="flex justify-end">
