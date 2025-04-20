@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Navbar from '../Components/NavBar';
-import SideBar from '../Components/SideBar';
+import Navbar from './navbar';
+import SideBar from './sidebar';
 import '../styles.css';
 
 const A_Complaints = () => {
