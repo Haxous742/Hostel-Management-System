@@ -13,6 +13,7 @@ A full-stack application built to digitize and streamline hostel operations at *
 - [Installation Guide](#-installation-guide)
 - [Usage](#-usage)
 - [Implementation Overview](#-implementation-overview)
+- [Database & Data Models](#-database--data-models)
 
 ---
 
@@ -116,15 +117,33 @@ This project has been structured with modularity, clarity, and scalability in mi
   - Complaints are stored in MongoDB with `status`, `type`, and `studentId`.
   - Admin routes allow toggling complaint resolution status.
 
-### 📃 Database (MongoDB)
+---
 
-- **Mongoose Models**:
-  - `User`: student data and profile info
-  - `Complaint`: detailed structure including type, message, resolution status
-  - `LeaveRequest`: structure for both temporary and permanent leaves
-  - `CommunityPost`: includes hashtags, image URL, and author
+## 🧩 Database & Data Models
 
-### ⚖️ Admin Panel
+This project uses **MongoDB** as its database, with **Mongoose** for modeling application data.
+
+The following models are used to structure and manage data:
+
+- **users_model.js**: Master schema storing student registration, login info, parent email, profile photo, and more.
+- **complaints_model.js**: Handles student-submitted complaints with fields like `type`, `message`, `status`, and `studentId`.
+- **leave_model.js**: Stores verified leave requests post OTP approval with details like `reason`, `type`, `departure`, and `return`.
+- **tempLeave_model.js**: Captures temporary leave forms waiting for OTP verification.
+- **menu_model.js**: Contains the mess menu data for each day; used for daily display and rating sync.
+- **post_model.js**: Holds community post info — text, image, hashtags, timestamp, and author metadata.
+- **rating_model.js**: Stores mess food ratings submitted by users for meals (breakfast, lunch, dinner).
+- **userVote_model.js**: Tracks user upvotes/downvotes on community posts to ensure one vote per user per post.
+
+Each schema includes:
+- Validation rules
+- Default timestamps
+- Indexes (for some models like posts or complaints) to enhance query performance
+
+These models are interlinked through references (e.g., `studentId` in complaints refers to a user) to maintain consistency and enforce data relations.
+
+---
+
+## ⚖️ Admin Panel
 
 - Admin can see lists of all active complaints and pending leave applications.
 - One-click approval or rejection of leaves.
