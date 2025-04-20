@@ -143,7 +143,8 @@ const Profile = () => {
     <div className="min-h-screen bg-gray-800 dark:bg-gray-900 text-white ">
       <SideBar />
       <Navbar />
-      <div className="sm:ml-64 mt-15">
+      <main className="pt-16 sm:ml-64 p-6">
+      <div className="max-w-4xl mx-auto space-y-6 mt-6">
         {/* Profile Card (Full Width) */}
         <div className="bg-slate-800 rounded-lg p-6 w-full relative shadow-md mb-6">
           <div className="flex justify-between items-center mb-4">
@@ -431,6 +432,7 @@ const Profile = () => {
           </div>
         )}
       </div>
+      </main>
     </div>
   );
 };
