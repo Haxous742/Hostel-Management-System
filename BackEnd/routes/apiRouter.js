@@ -151,7 +151,22 @@ apiRouter.get('/users', async (req, res) => {
 
 
 
-
+  apiRouter.get('/today', async (req, res) => {
+    try {
+      const today = new Date();
+      const mmdd = (today.getMonth() + 1).toString().padStart(2, '0') + '-' + today.getDate().toString().padStart(2, '0');
+  
+      const usersWithBirthdayToday = await user_model.find({
+        dob: { $regex: `-${mmdd}$` } // matches any date ending with -MM-DD
+      });
+  
+      res.json(usersWithBirthdayToday);
+    } catch (error) {
+      console.error('Error fetching birthdays:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
 
 
 

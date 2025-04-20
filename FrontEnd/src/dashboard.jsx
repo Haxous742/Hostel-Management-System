@@ -149,7 +149,7 @@ const Dashboard = () => {
     const fetchBirthdays = async () => {
       try {
         setLoadingBirthdays(true);
-        const response = await axios.get('/api/birthdays/today');
+        const response = await axios.get('/api/today');
         setBirthdays(response.data || mockBirthdays);
       } catch (error) {
         console.error("Error fetching birthdays:", error);
@@ -161,6 +161,12 @@ const Dashboard = () => {
 
     fetchBirthdays();
   }, []);
+
+
+
+
+
+
 
   // Update time every minute
   useEffect(() => {
