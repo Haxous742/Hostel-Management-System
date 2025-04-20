@@ -10,8 +10,29 @@ const LeavePortal = () => {
   const [endDate, setEndDate] = useState('');
   const [leaveList, setLeaveList] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [isRequestingOtp, setIsRequestingOtp] = useState(false);
+  const [studentName, setStudentName] = useState('');
 
   useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await axios.get('/api/student/info', {
+          withCredentials: true,
+        });
+        if (response.data.student && response.data.student.name) {
+          setStudentName(response.data.student.name);
+        } else {
+          console.log('No student name found');
+        }
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+      }
+    };
+    fetchProfileData();
+
+    // Fetch leave list
     axios
       .get('/api/student/leave/show')
       .then((res) => {
@@ -23,36 +44,72 @@ const LeavePortal = () => {
       });
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!reason.trim() || !startDate || !endDate) return;
+    if (!reason.trim() || !startDate || !endDate) {
+      alert('Please fill in all fields.');
+      return;
+    }
+    if (!studentName) {
+      alert('Student profile not loaded. Please try again.');
+      return;
+    }
+
+    setIsRequestingOtp(true);
+    try {
+      // Call backend to request OTP using student name
+      await axios.post('/api/student/leave/request-otp', { name: studentName });
+      setShowOtpModal(true); // Show OTP modal after successful request
+    } catch (err) {
+      console.error('Error requesting OTP:', err);
+      alert('Failed to send OTP. Please try again.');
+    } finally {
+      setIsRequestingOtp(false);
+    }
+  };
+
+  const handleOtpSubmit = async () => {
+    if (!otp.trim()) {
+      alert('Please enter the OTP.');
+      return;
+    }
 
     setIsSubmitting(true);
-    axios
-      .post('/api/student/leave/new', {
+    try {
+      const res = await axios.post('/api/student/leave/new', {
+        name: studentName,
         leaveType,
         reason,
         startDate,
         endDate,
-      })
-      .then((res) => {
-        const newLeave = {
-          id: res.data.id || Date.now(),
-          leaveType,
-          reason,
-          startDate,
-          endDate,
-          status: 'Pending',
-        };
-        setLeaveList([...leaveList, newLeave]);
-        setReason('');
-        setStartDate('');
-        setEndDate('');
-      })
-      .catch((err) => {
-        console.error('Error submitting leave request:', err);
-      })
-      .finally(() => setIsSubmitting(false));
+        otp,
+      });
+
+      const newLeave = {
+        id: res.data.id || Date.now(),
+        leaveType,
+        reason,
+        startDate,
+        endDate,
+        status: 'Pending',
+      };
+      setLeaveList([...leaveList, newLeave]);
+      setReason('');
+      setStartDate('');
+      setEndDate('');
+      setOtp('');
+      setShowOtpModal(false);
+    } catch (err) {
+      console.error('Error submitting leave request:', err);
+      alert('Invalid OTP or submission failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleOtpCancel = () => {
+    setOtp('');
+    setShowOtpModal(false);
   };
 
   const handleLogout = () => {
@@ -125,10 +182,10 @@ const LeavePortal = () => {
                   </div>
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isRequestingOtp}
                     className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                   >
-                    {isSubmitting ? 'Submitting...' : 'Apply for Leave'}
+                    {isRequestingOtp ? 'Requesting OTP...' : isSubmitting ? 'Submitting...' : 'Apply for Leave'}
                   </button>
                 </form>
               </div>
@@ -193,6 +250,42 @@ const LeavePortal = () => {
           </div>
         </div>
       </div>
+
+      {/* OTP Modal */}
+      {showOtpModal && (
+        <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-2xl shadow-xl p-6 w-full max-w-md">
+            <h2 className="text-2xl font-semibold text-white mb-4 text-center">
+              Enter OTP
+            </h2>
+            <p className="text-gray-300 mb-4 text-center">
+              Please enter the OTP sent to your parent's registered email address.
+            </p>
+            <input
+              type="text"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2 mb-4"
+              placeholder="Enter OTP"
+            />
+            <div className="flex justify-between">
+              <button
+                onClick={handleOtpCancel}
+                className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleOtpSubmit}
+                disabled={isSubmitting || !otp.trim()}
+                className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                {isSubmitting ? 'Submitting...' : 'Submit OTP'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
