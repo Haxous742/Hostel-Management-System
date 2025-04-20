@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Navbar from './Components/NavBar';
 import SideBar from './Components/SideBar';
@@ -10,10 +10,13 @@ const Community = () => {
   const [loading, setPending] = useState(false);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [filter, setFilter] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
 
   const hashtagSuggestions = [
     'Announcement', 'Event', 'Question', 'General', 
-    'Hostel', 'Mess', 'Academic', 'Social'
+    'Hostel', 'Mess', 'Academic', 'Social', 'Admin'
   ];
 
   useEffect(() => {
@@ -33,9 +36,29 @@ const Community = () => {
     fetchPosts();
   }, []);
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleSubmitPost = async (e) => {
     e.preventDefault();
-    if (!newPost.trim()) return;
+    if (!newPost.trim() && !selectedImage) return;
 
     try {
       setPending(true);
@@ -44,6 +67,18 @@ const Community = () => {
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0)
         .map(tag => tag.startsWith('#') ? tag : `#${tag}`);
+
+      // Check if Admin hashtag is included
+      const isAdminPost = hashtagArray.some(tag => 
+        tag.toLowerCase() === '#admin'
+      );
+
+      // In a real app, you'd upload the image and get a URL back
+      let imageURL = null;
+      if (selectedImage) {
+        // This is a placeholder for your actual image upload logic
+        imageURL = imagePreview; // Just for demo purposes
+      }
 
       const newPostData = {
         content: newPost,
@@ -55,12 +90,19 @@ const Community = () => {
         timestamp: new Date().toISOString(),
         upvotes: 0,
         downvotes: 0,
-        userVote: null
+        userVote: null,
+        isAdminPost,
+        imageURL
       };
 
       setPosts(prevPosts => [newPostData, ...prevPosts]);
       setNewPost('');
       setHashtags('');
+      setSelectedImage(null);
+      setImagePreview(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
     } catch (error) {
       console.error("Error creating post:", error);
     } finally {
@@ -129,7 +171,8 @@ const Community = () => {
       timestamp: "2025-04-19T14:30:00Z",
       upvotes: 15,
       downvotes: 2,
-      userVote: null
+      userVote: null,
+      isAdminPost: false
     },
     {
       id: 2,
@@ -142,20 +185,22 @@ const Community = () => {
       timestamp: "2025-04-19T09:15:00Z",
       upvotes: 32,
       downvotes: 0,
-      userVote: 'upvote'
+      userVote: 'upvote',
+      isAdminPost: false
     },
     {
       id: 3,
-      content: "Lost a blue notebook in the mess area. Please contact me if found!",
-      hashtags: ["#Lost", "#Hostel"],
+      content: "IMPORTANT: Maintenance work will be carried out in Block C this weekend. Please plan accordingly.",
+      hashtags: ["#Announcement", "#Admin", "#Hostel"],
       author: {
-        name: "Priya Singh",
+        name: "Admin User",
         avatarURL: "../public/img/default-avatar.png"
       },
       timestamp: "2025-04-18T18:45:00Z",
-      upvotes: 5,
-      downvotes: 1,
-      userVote: null
+      upvotes: 45,
+      downvotes: 0,
+      userVote: null,
+      isAdminPost: true
     }
   ];
 
@@ -166,36 +211,84 @@ const Community = () => {
       
       <div className="p-4 sm:ml-64 pt-20">
         <div className="p-4">
-          <h1 className="text-2xl font-bold text-white mb-6">Community Posts</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-white">Community Posts</h1>
+            <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-all duration-150 flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+              Your Posts
+            </button>
+          </div>
           
-          {/* Create post form */}
-          <div className="bg-gray-800 rounded-lg p-4 mb-6 shadow-lg border border-gray-700">
-            <form onSubmit={handleSubmitPost}>
-              <div className="mb-4">
-                <textarea
-                  className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  rows="4"
-                  placeholder="Share something with the community..."
-                  value={newPost}
-                  onChange={(e) => setNewPost(e.target.value)}
-                  required
-                ></textarea>
-              </div>
-              
-              <div className="mb-4">
-                <input
-                  type="text"
-                  className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Add hashtags separated by commas (e.g., event, question, announcement)"
-                  value={hashtags}
-                  onChange={(e) => setHashtags(e.target.value)}
-                />
-                <div className="flex flex-wrap gap-2 mt-2">
+          {/* Create post form with gradient border */}
+          <div className="mb-6 p-[1px] rounded-lg bg-gradient-to-r from-purple-500 to-pink-500">
+            <div className="bg-gray-800 rounded-lg p-4 shadow-lg">
+              <form onSubmit={handleSubmitPost}>
+                <div className="mb-4">
+                  <textarea
+                    className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows="4"
+                    placeholder="Share something with the community..."
+                    value={newPost}
+                    onChange={(e) => setNewPost(e.target.value)}
+                  ></textarea>
+                </div>
+                
+                {/* Image upload preview */}
+                {imagePreview && (
+                  <div className="mb-4 relative">
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview" 
+                      className="max-h-60 rounded-lg mx-auto object-contain bg-gray-700 p-2" 
+                    />
+                    <button 
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                      </svg>
+                    </button>
+                  </div>
+                )}
+                
+                <div className="flex flex-wrap gap-3 mb-4">
+                  {/* Image upload button */}
+                  <label className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg cursor-pointer transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    Add Image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageChange}
+                      ref={fileInputRef}
+                    />
+                  </label>
+                  
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      className="w-full bg-gray-700 text-white rounded-lg p-2 border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Add hashtags separated by commas (e.g., event, question)"
+                      value={hashtags}
+                      onChange={(e) => setHashtags(e.target.value)}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-4">
                   {hashtagSuggestions.map((tag) => (
                     <button
                       key={tag}
                       type="button"
-                      className="text-xs bg-gray-700 hover:bg-gray-600 text-blue-400 px-2 py-1 rounded-full"
+                      className={`text-xs ${tag === 'Admin' ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-gray-700 hover:bg-gray-600'} text-white px-2 py-1 rounded-full transition-colors`}
                       onClick={() => {
                         const newTag = tag.startsWith('#') ? tag : `#${tag}`;
                         const currentTags = hashtags.split(',').map(t => t.trim()).filter(t => t);
@@ -208,28 +301,28 @@ const Community = () => {
                     </button>
                   ))}
                 </div>
-              </div>
-              
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-150 flex items-center"
-                >
-                  {loading ? (
-                    <>
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Posting...
-                    </>
-                  ) : (
-                    "Post"
-                  )}
-                </button>
-              </div>
-            </form>
+                
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium rounded-lg transition-all duration-150 flex items-center"
+                  >
+                    {loading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Posting...
+                      </>
+                    ) : (
+                      "Post"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
           
           {/* Search and filter */}
@@ -252,86 +345,114 @@ const Community = () => {
               </div>
             ) : filterPosts().length > 0 ? (
               filterPosts().map((post, index) => (
-                <div key={post.id || index} className="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 transition-all duration-200 hover:shadow-xl">
-                  <div className="flex items-start gap-3">
-                    <img 
-                      src={post.author.avatarURL} 
-                      alt={post.author.name} 
-                      className="w-10 h-10 rounded-full object-cover border-2 border-gray-700"
-                    />
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start">
-                        <span className="font-medium text-white">{post.author.name}</span>
-                        <span className="text-xs text-gray-400">
-                          {new Date(post.timestamp).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </span>
-                      </div>
-                      <p className="text-gray-300 mt-2 whitespace-pre-wrap">{post.content}</p>
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        {post.hashtags.map((tag, i) => (
-                          <span key={i} className="text-xs bg-gray-700 text-blue-400 px-2 py-1 rounded-full">
-                            {tag}
+                <div 
+                  key={post.id || index} 
+                  className={`${post.isAdminPost ? 'p-[1px] bg-gradient-to-r from-purple-500 to-pink-500' : ''} rounded-lg transition-all duration-200 hover:shadow-xl`}
+                >
+                  <div className="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
+                    <div className="flex items-start gap-3">
+                      <img 
+                        src={post.author.avatarURL} 
+                        alt={post.author.name} 
+                        className="w-10 h-10 rounded-full object-cover border-2 border-gray-700"
+                      />
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                          <span className="font-medium text-white">{post.author.name}</span>
+                          <span className="text-xs text-gray-400">
+                            {new Date(post.timestamp).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
                           </span>
-                        ))}
-                      </div>
-                      
-                      {/* Updated Voting System to match image */}
-                      <div className="flex items-center mt-4 space-x-6">
-                        {/* Upvote button */}
-                        <button 
-                          className={`flex items-center gap-2 ${
-                            post.userVote === 'upvote' ? 'text-green-500' : 'text-gray-400 hover:text-green-500'
-                          } transition-colors duration-200`}
-                          onClick={() => handleVote(post.id, 'upvote')}
-                        >
-                          <svg 
-                            className="w-5 h-5" 
-                            fill={post.userVote === 'upvote' ? "currentColor" : "none"} 
-                            stroke="currentColor" 
-                            viewBox="0 0 24 24" 
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path 
-                              strokeLinecap="round" 
-                              strokeLinejoin="round" 
-                              strokeWidth="2" 
-                              d="M5 15l7-7 7 7"
-                            />
-                          </svg>
-                          <span>{post.upvotes}</span>
-                          <span className="ml-1">Upvote</span>
-                        </button>
+                        </div>
+                        <p className="text-gray-300 mt-2 whitespace-pre-wrap">{post.content}</p>
                         
-                        {/* Downvote button */}
-                        <button 
-                          className={`flex items-center gap-2 ${
-                            post.userVote === 'downvote' ? 'text-red-500' : 'text-gray-400 hover:text-red-500'
-                          } transition-colors duration-200`}
-                          onClick={() => handleVote(post.id, 'downvote')}
-                        >
-                          <svg 
-                            className="w-5 h-5" 
-                            fill={post.userVote === 'downvote' ? "currentColor" : "none"} 
-                            stroke="currentColor" 
-                            viewBox="0 0 24 24" 
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path 
-                              strokeLinecap="round" 
-                              strokeLinejoin="round" 
-                              strokeWidth="2" 
-                              d="M19 9l-7 7-7-7"
+                        {/* Display post image if available */}
+                        {post.imageURL && (
+                          <div className="mt-3 mb-3">
+                            <img 
+                              src={post.imageURL} 
+                              alt="Post attachment" 
+                              className="max-h-80 rounded-lg object-contain mx-auto"
                             />
-                          </svg>
-                          <span>{post.downvotes}</span>
-                          <span className="ml-1">Downvote</span>
-                        </button>
+                          </div>
+                        )}
+                        
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {post.hashtags.map((tag, i) => (
+                            <span 
+                              key={i} 
+                              className={`text-xs px-2 py-1 rounded-full ${
+                                tag.toLowerCase() === '#admin' 
+                                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' 
+                                  : 'bg-gray-700 text-blue-400'
+                              }`}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                        
+                        {/* Improved vote buttons */}
+                        <div className="flex items-center mt-4 space-x-6">
+                          {/* Upvote button */}
+                          <button 
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
+                              post.userVote === 'upvote' 
+                                ? 'bg-green-500/20 text-green-500 border border-green-500' 
+                                : 'text-gray-400 hover:text-green-500 hover:bg-green-500/10 hover:border-green-500/50 border border-transparent'
+                            } transition-all duration-200`}
+                            onClick={() => handleVote(post.id, 'upvote')}
+                          >
+                            <svg 
+                              className="w-5 h-5" 
+                              fill={post.userVote === 'upvote' ? "currentColor" : "none"} 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24" 
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth="2" 
+                                d="M5 15l7-7 7 7"
+                              />
+                            </svg>
+                            <span>{post.upvotes}</span>
+                            <span className="ml-1">Upvote</span>
+                          </button>
+                          
+                          {/* Downvote button */}
+                          <button 
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
+                              post.userVote === 'downvote' 
+                                ? 'bg-red-500/20 text-red-500 border border-red-500' 
+                                : 'text-gray-400 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/50 border border-transparent'
+                            } transition-all duration-200`}
+                            onClick={() => handleVote(post.id, 'downvote')}
+                          >
+                            <svg 
+                              className="w-5 h-5" 
+                              fill={post.userVote === 'downvote' ? "currentColor" : "none"} 
+                              stroke="currentColor" 
+                              viewBox="0 0 24 24" 
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth="2" 
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                            <span>{post.downvotes}</span>
+                            <span className="ml-1">Downvote</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
