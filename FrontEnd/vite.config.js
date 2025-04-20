@@ -5,7 +5,7 @@ import flowbiteReact from "flowbite-react/plugin/vite";
 
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), flowbiteReact()],
   server: {
     proxy: {
       '/api': {
