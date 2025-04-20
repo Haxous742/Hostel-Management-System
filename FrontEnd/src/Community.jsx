@@ -118,6 +118,45 @@ const Community = () => {
   };
 
   const mockPosts = [
+    {
+      id: 1,
+      content: "Anyone interested in forming a study group for the upcoming exams?",
+      hashtags: ["#Academic", "#StudyGroup"],
+      author: {
+        name: "Sarah Johnson",
+        avatarURL: "../public/img/default-avatar.png"
+      },
+      timestamp: "2025-04-19T14:30:00Z",
+      upvotes: 15,
+      downvotes: 2,
+      userVote: null
+    },
+    {
+      id: 2,
+      content: "Movie night this Saturday in the common room! Bring snacks and good vibes.",
+      hashtags: ["#Event", "#Social", "#MovieNight"],
+      author: {
+        name: "Michael Chen",
+        avatarURL: "../public/img/default-avatar.png"
+      },
+      timestamp: "2025-04-19T09:15:00Z",
+      upvotes: 32,
+      downvotes: 0,
+      userVote: 'upvote'
+    },
+    {
+      id: 3,
+      content: "Lost a blue notebook in the mess area. Please contact me if found!",
+      hashtags: ["#Lost", "#Hostel"],
+      author: {
+        name: "Priya Singh",
+        avatarURL: "../public/img/default-avatar.png"
+      },
+      timestamp: "2025-04-18T18:45:00Z",
+      upvotes: 5,
+      downvotes: 1,
+      userVote: null
+    }
   ];
 
   return (
