@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from './Components/NavBar';
 import SideBar from './Components/SideBar';
-import DeleteButton from './Components/DeleteButton';
 
 const LeavePortal = () => {
   const [leaveType, setLeaveType] = useState('Medical');
@@ -61,12 +60,11 @@ const LeavePortal = () => {
 
     setIsSubmitting(true);
     try {
-      const res = await axios.post(
+      await axios.post(
         '/api/student/leave/verify',
         { otp, leaveId },
         { withCredentials: true }
       );
-
       const newLeave = {
         id: Date.now(),
         leaveType,
@@ -89,12 +87,9 @@ const LeavePortal = () => {
     }
   };
 
-
-// send data as body
   const handleDelete = (id) => async () => {
     try {
-      const res = await axios.post(`/api/student/leave/delete`, {
-         id } );
+      const res = await axios.post(`/api/student/leave/delete`, { id });
       if (res.status === 200) {
         setLeaveList(leaveList.filter((item) => item._id !== id));
       } else {
@@ -104,7 +99,7 @@ const LeavePortal = () => {
       console.error('Error deleting leave request:', err);
       alert('Failed to delete leave request.');
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
@@ -118,9 +113,12 @@ const LeavePortal = () => {
             </h1>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Leave Form */}
-              <div className="bg-gray-800 rounded-2xl shadow-xl p-6">
-                <h2 className="text-2xl font-semibold mb-6">Apply for Leave</h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="bg-gray-800 rounded-2xl shadow-xl p-6 h-[600px] overflow-hidden flex flex-col">
+                <h2 className="text-2xl font-semibold mb-4">Apply for Leave</h2>
+                <form
+                  onSubmit={handleSubmit}
+                  className="space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 pr-2 flex-1"
+                >
                   <div>
                     <label className="block mb-1">Leave Type</label>
                     <select
@@ -172,12 +170,12 @@ const LeavePortal = () => {
               </div>
 
               {/* Leave List */}
-              <div className="bg-gray-800 rounded-2xl shadow-xl p-6">
-                <h2 className="text-2xl font-semibold mb-6">Your Leave Requests</h2>
+              <div className="bg-gray-800 rounded-2xl shadow-xl p-6 h-[600px] overflow-hidden flex flex-col">
+                <h2 className="text-2xl font-semibold mb-4">Your Leave Requests</h2>
                 {leaveList.length === 0 ? (
                   <p className="text-gray-400 italic text-center">No leave applications yet.</p>
                 ) : (
-                  <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                  <div className="overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 custom-scrollbar pr-2 flex-1 space-y-4">
                     {leaveList.map((item, idx) => (
                       <div
                         key={idx}
