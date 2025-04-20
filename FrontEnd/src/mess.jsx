@@ -150,6 +150,7 @@ const Menu = () => {
       <SideBar />
       <div className="pt-20 sm:pl-64 p-6">
         <div className="container mx-auto max-w-4xl">
+         <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 to-pink-500">
           <div className="bg-gray-200 dark:bg-gray-800 rounded-lg shadow-xl p-6">
             <div className="flex justify-between items-center mb-6">
               <button onClick={handlePrevDay} className="text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-400 transition-colors" disabled={isLoading}>
@@ -212,6 +213,7 @@ const Menu = () => {
             >
               {isSubmitting ? 'Submitting...' : isLoading ? 'Loading...' : 'Submit Rating'}
             </button>
+           </div>
           </div>
         </div>
       </div>
