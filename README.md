@@ -88,6 +88,9 @@ A full-stack application built to digitize and streamline hostel operations at *
      ```
      API: [http://localhost:5000](http://localhost:5000)
 
+    **  The ID and password for admin are:
+        ID: admin
+        Password: password**
 ---
 
 ## ⚖️ Implementation Overview
