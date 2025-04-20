@@ -34,7 +34,7 @@ const App = () => {
         <Route path="/dashboard/Leave/Cab-Sharing" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
 
-        <Route path="/user/:userId" element={<ProtectedRoute><PublicProfile/></ProtectedRoute>} />
+        <Route path="/user/:userId" element={<ProtectedRoute><PublicProfile /></ProtectedRoute>} />
 
         <Route path="*" element={<NotFound />} />
 
