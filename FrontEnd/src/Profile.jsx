@@ -343,6 +343,15 @@ const Profile = () => {
               </label>
               <p className="text-white">{profileData.parentsPhoneNo}</p>
             </div>
+            <div>
+              <label className="block text-sm text-gray-400">
+                Date of Birth
+              </label>
+                  <p className="text-white">
+      {new Date(profileData.dob).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}
+    </p>
+
+            </div>
           </div>
         </div>
 

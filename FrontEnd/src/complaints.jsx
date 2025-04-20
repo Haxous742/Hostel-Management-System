@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from './Components/NavBar';
 import SideBar from './Components/SideBar';
+import './styles.css';
 
 const Complaints = () => {
   const [category, setCategory] = useState('Mess');
@@ -14,10 +15,9 @@ const Complaints = () => {
       .get('/api/student/complaints/show')
       .then((res) => {
         setComplaintsList(res.data);
-        console.log('Fetched complaints:', res.data);
       })
       .catch((err) => {
-        console.error('Error fetching complaints:', err);
+        console.error('Error fetching complaints:', err); 
       });
   }, []);
 
@@ -56,72 +56,74 @@ const Complaints = () => {
     <div className="min-h-screen bg-gray-900 text-gray-100">
       <Navbar onLogout={handleLogout} />
       <SideBar />
-      <div className="pt-20 sm:pl-64 min-h-screen ">
+      <div className="pt-20 sm:pl-64 min-h-screen">
         <div className="p-6">
-          <div className="container mx-auto max-w-6xl ">
+          <div className="container mx-auto max-w-6xl">
             <h1 className="text-4xl font-bold text-white mb-8 text-center">
               Complaints Portal
             </h1>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Left Half - Complaint Form */}
-              <div className="bg-gray-800 rounded-2xl shadow-xl p-6">
-                <h2 className="text-2xl font-semibold text-white mb-6">
+              {/* Left - Complaint Form */}
+              <div className="bg-gray-800 rounded-2xl shadow-xl p-6 h-[500px] overflow-hidden">
+                <h2 className="text-2xl font-semibold text-white mb-4">
                   Submit a Complaint
                 </h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label htmlFor="category" className="block text-gray-300 mb-1">
-                      Category
-                    </label>
-                    <select
-                      id="category"
-                      value={category}
-                      onChange={(e) => setCategory(e.target.value)}
-                      className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
+                <div className="h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                      <label htmlFor="category" className="block text-gray-300 mb-1">
+                        Category
+                      </label>
+                      <select
+                        id="category"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
+                      >
+                        <option value="Mess">Mess</option>
+                        <option value="Hostel Rooms">Hostel Rooms</option>
+                        <option value="Hostel Washroom">Hostel Washroom</option>
+                        <option value="MPH">MPH</option>
+                        <option value="Gym">Gym</option>
+                        <option value="Others">Others</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="complaint" className="block text-gray-300 mb-1">
+                        Complaint
+                      </label>
+                      <textarea
+                        id="complaint"
+                        rows="4"
+                        value={complaint}
+                        onChange={(e) => setComplaint(e.target.value)}
+                        className="w-full border border-gray-600 bg-gray-700 h-55 text-white rounded-lg p-2 mh-2"
+                        placeholder="Describe your issue..."
+                      ></textarea>
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                     >
-                      <option value="Mess">Mess</option>
-                      <option value="Hostel Rooms">Hostel Rooms</option>
-                      <option value="Hostel Washroom">Hostel Washroom</option>
-                      <option value="MPH">MPH</option>
-                      <option value="Gym">Gym</option>
-                      <option value="Others">Others</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label htmlFor="complaint" className="block text-gray-300 mb-1">
-                      Complaint
-                    </label>
-                    <textarea
-                      id="complaint"
-                      rows="4"
-                      value={complaint}
-                      onChange={(e) => setComplaint(e.target.value)}
-                      className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
-                      placeholder="Describe your issue..."
-                    ></textarea>
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-                  >
-                    {isSubmitting ? 'Submitting...' : 'Submit Complaint'}
-                  </button>
-                </form>
+                      {isSubmitting ? 'Submitting...' : 'Submit Complaint'}
+                    </button>
+                  </form>
+                </div>
               </div>
 
-              {/* Right Half - Complaints List */}
-              <div className="bg-gray-800 rounded-2xl shadow-xl p-6">
-                <h2 className="text-2xl font-semibold text-white mb-6">
+              {/* Right - Complaints List */}
+              <div className="bg-gray-800 rounded-2xl shadow-xl p-6 h-[500px] overflow-hidden">
+                <h2 className="text-2xl font-semibold text-white mb-4">
                   Your Complaints
                 </h2>
-                {complaintsList.length === 0 ? (
-                  <p className="text-gray-400 text-center italic">
-                    No complaints filed yet.
-                  </p>
-                ) : (
-                  <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
-                    {complaintsList.map((item, idx) => (
+                <div className="space-y-4 h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                  {complaintsList.length === 0 ? (
+                    <p className="text-gray-400 text-center italic">
+                      No complaints filed yet.
+                    </p>
+                  ) : (
+                    complaintsList.map((item) => (
                       <div
                         key={item.id}
                         className="p-4 bg-gray-700 rounded-lg border border-gray-600 hover:bg-gray-600 transition-colors"
@@ -158,29 +160,29 @@ const Complaints = () => {
                             {item.status}
                           </span>
                           <button
-                          onClick={async () => {
-                            try {
-                              const res=await axios.post('/api/student/complaints/delete', {
-                                complaintId: item._id,
-                              }, { withCredentials: true });
-                              console.log(res,"Heklo");
-                              const updatedComplaintsList = complaintsList.filter((c) => c._id !== item._id);
-                              setComplaintsList(updatedComplaintsList);
-                            } catch (err) {
-                              console.error("Error deleting complaint:", err);
-                              alert("Failed to delete complaint.");
-                            }
-                          }}
-                          className="bg-red-600 text-white px-3 py-1 text-xs rounded-lg hover:bg-red-700 transition-all"
-                        >
-                          Delete Complaint
-                        </button>
-
+                            onClick={async () => {
+                              try {
+                                const res = await axios.post(
+                                  '/api/student/complaints/delete',
+                                  { complaintId: item._id },
+                                  { withCredentials: true }
+                                );
+                                const updated = complaintsList.filter((c) => c._id !== item._id);
+                                setComplaintsList(updated);
+                              } catch (err) {
+                                console.error('Error deleting complaint:', err);
+                                alert('Failed to delete complaint.');
+                              }
+                            }}
+                            className="bg-red-600 text-white px-3 py-1 text-xs rounded-lg hover:bg-red-700 transition-all"
+                          >
+                            Delete Complaint
+                          </button>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
+                    ))
+                  )}
+                </div>
               </div>
             </div>
           </div>
