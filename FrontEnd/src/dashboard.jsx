@@ -69,13 +69,54 @@ const Dashboard = () => {
     fetchPosts();
   }, []);
 
-  // Fetch today's meals
+
+
+
+
+
+
+
   useEffect(() => {
     const fetchMeals = async () => {
       try {
         setLoadingMeals(true);
-        const response = await axios.get('/api/meals/today');
-        setMeals(response.data || mockMeals);
+        const response = await axios.get('/api/student/menu');
+        const menu = response.data.menu;
+        
+        // Get today's day in the same format as your API
+        const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+  
+        console.log("Today is:", today);
+  
+        const todayMenu = menu.find(item => item.day === today);
+  
+        console.log("Found menu for today:", todayMenu);
+  
+        if (todayMenu) {
+          const formattedMeals = {
+            breakfast: {
+              time: { start: "07:30", end: "09:30" },
+              items: todayMenu.breakfast || []
+            },
+            lunch: {
+              time: { start: "12:30", end: "14:30" },
+              items: todayMenu.lunch || []
+            },
+            snacks: {
+              time: { start: "16:30", end: "17:30" },
+              items: todayMenu.snacks || []
+            },
+            dinner: {
+              time: { start: "19:30", end: "21:30" },
+              items: todayMenu.dinner || []
+            }
+          };
+  
+          setMeals(formattedMeals);
+        } else {
+          console.warn("No menu found for today, using mock.");
+          setMeals(mockMeals);
+        }
       } catch (error) {
         console.error("Error fetching meals:", error);
         setMeals(mockMeals);
@@ -83,10 +124,26 @@ const Dashboard = () => {
         setLoadingMeals(false);
       }
     };
-
+  
     fetchMeals();
   }, []);
+  
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   // Fetch today's birthdays
   useEffect(() => {
     const fetchBirthdays = async () => {
@@ -207,25 +264,7 @@ const Dashboard = () => {
     }
   ];
 
-  const mockMeals = {
-    breakfast: {
-      time: { start: "07:30", end: "09:30" },
-      items: ["Masala Dosa", "Idli Sambar", "Bread & Jam", "Boiled Eggs", "Tea/Coffee"]
-    },
-    lunch: {
-      time: { start: "12:30", end: "14:30" },
-      items: ["Chapati", "Dal Tadka", "Paneer Butter Masala", "Jeera Rice", "Raita", "Salad"]
-    },
-    snacks: {
-      time: { start: "16:30", end: "17:30" },
-      items: ["Samosa", "Vada", "Tea/Coffee"]
-    },
-    dinner: {
-      time: { start: "19:30", end: "21:30" },
-      items: ["Chapati", "Mixed Vegetable Curry", "Dal Fry", "Pulao", "Ice Cream", "Salad"]
-    }
-  };
-
+ 
   const mockBirthdays = [
     {
       id: 1,
