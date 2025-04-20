@@ -155,6 +155,9 @@ const Navbar = ({ onLogout }) => {
                       <a href="/dashboard/Profile" className="block px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-gray-600">Profile</a>
                     </li>
                     <li>
+                      <a href="/admin" className="block px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-gray-600">Admin</a>
+                    </li>
+                    <li>
                       <a
                         href="/"
                         onClick={async () => {

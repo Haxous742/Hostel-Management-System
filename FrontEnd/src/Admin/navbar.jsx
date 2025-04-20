@@ -69,7 +69,7 @@ const Navbar = ({ onLogout }) => {
           {isSidebarMenuOpen && (
             <ul className="space-y-2 mt-4">
               <li>
-                <a href="/dashboard/Profile" className="block py-2 px-4 hover:bg-gray-700 rounded-lg">Profile</a>
+                <a href="/admin/dashboard/Profile" className="block py-2 px-4 hover:bg-gray-700 rounded-lg">Profile</a>
               </li>
               <li>
                 <a href="#" onClick={onLogout} className="block py-2 px-4 bg-red-600 hover:bg-red-700 rounded-lg">Log out</a>
@@ -128,7 +128,7 @@ const Navbar = ({ onLogout }) => {
                       className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2 cursor-pointer"
                     >
                       <img
-                        src={user.avatarURL || '../public/img/default-avatar.png'}
+                        src={user.avatarURL || '.../public/img/default-avatar.png'}
                         alt="avatar"
                         className="w-6 h-6 rounded-full"
                       />
