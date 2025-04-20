@@ -343,6 +343,7 @@ studentRouter.post('/leave/verify', async (req, res) => {
 
     if (parseInt(otp) === tempLeave.otp) {
       const newLeave = new LeaveRequest({
+        leaveType: tempLeave.leaveType,
         userId: tempLeave.userId,
         reason: tempLeave.reason,
         startDate: tempLeave.startDate,

@@ -13,35 +13,19 @@ const LeavePortal = () => {
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [otp, setOtp] = useState('');
   const [isRequestingOtp, setIsRequestingOtp] = useState(false);
-  const [studentName, setStudentName] = useState('');
+  const [leaveId, setLeaveId] = useState(null);
 
   useEffect(() => {
-    const fetchProfileData = async () => {
+    const fetchLeaveData = async () => {
       try {
-        const response = await axios.get('/api/student/info', {
-          withCredentials: true,
-        });
-        if (response.data.student && response.data.student.name) {
-          setStudentName(response.data.student.name);
-        } else {
-          console.log('No student name found');
-        }
-      } catch (error) {
-        console.error('Error fetching profile data:', error);
+        const res = await axios.get('/api/student/leave/show', { withCredentials: true });
+        setLeaveList(res.data);
+      } catch (err) {
+        console.error('Error fetching leave requests:', err);
       }
     };
-    fetchProfileData();
 
-    // Fetch leave list
-    axios
-      .get('/api/student/leave/show')
-      .then((res) => {
-        setLeaveList(res.data);
-        console.log('Fetched leave requests:', res.data);
-      })
-      .catch((err) => {
-        console.error('Error fetching leave requests:', err);
-      });
+    fetchLeaveData();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -50,19 +34,19 @@ const LeavePortal = () => {
       alert('Please fill in all fields.');
       return;
     }
-    if (!studentName) {
-      alert('Student profile not loaded. Please try again.');
-      return;
-    }
 
     setIsRequestingOtp(true);
     try {
-      // Call backend to request OTP using student name
-      await axios.post('/api/student/leave/request-otp', { name: studentName });
-      setShowOtpModal(true); // Show OTP modal after successful request
+      const res = await axios.post(
+        '/api/student/leave/new',
+        { leaveType, reason, startDate, endDate },
+        { withCredentials: true }
+      );
+      setLeaveId(res.data.leaveId);
+      setShowOtpModal(true);
     } catch (err) {
-      console.error('Error requesting OTP:', err);
-      alert('Failed to send OTP. Please try again.');
+      console.error('OTP request failed:', err);
+      alert('Failed to request OTP.');
     } finally {
       setIsRequestingOtp(false);
     }
@@ -76,17 +60,14 @@ const LeavePortal = () => {
 
     setIsSubmitting(true);
     try {
-      const res = await axios.post('/api/student/leave/new', {
-        name: studentName,
-        leaveType,
-        reason,
-        startDate,
-        endDate,
-        otp,
-      });
+      const res = await axios.post(
+        '/api/student/leave/verify',
+        { otp, leaveId },
+        { withCredentials: true }
+      );
 
       const newLeave = {
-        id: res.data.id || Date.now(),
+        id: Date.now(),
         leaveType,
         reason,
         startDate,
@@ -100,25 +81,16 @@ const LeavePortal = () => {
       setOtp('');
       setShowOtpModal(false);
     } catch (err) {
-      console.error('Error submitting leave request:', err);
-      alert('Invalid OTP or submission failed. Please try again.');
+      console.error('OTP verification failed:', err);
+      alert('Invalid OTP or verification failed.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleOtpCancel = () => {
-    setOtp('');
-    setShowOtpModal(false);
-  };
-
-  const handleLogout = () => {
-    console.log('Logged out');
-  };
-
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
-      <Navbar onLogout={handleLogout} />
+      <Navbar />
       <SideBar />
       <div className="pt-20 sm:pl-64 min-h-screen">
         <div className="p-6">
@@ -127,21 +99,16 @@ const LeavePortal = () => {
               Leave Application Portal
             </h1>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Left Half - Leave Form */}
+              {/* Leave Form */}
               <div className="bg-gray-800 rounded-2xl shadow-xl p-6">
-                <h2 className="text-2xl font-semibold text-white mb-6">
-                  Apply for Leave
-                </h2>
+                <h2 className="text-2xl font-semibold mb-6">Apply for Leave</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label htmlFor="leaveType" className="block text-gray-300 mb-1">
-                      Leave Type
-                    </label>
+                    <label className="block mb-1">Leave Type</label>
                     <select
-                      id="leaveType"
                       value={leaveType}
                       onChange={(e) => setLeaveType(e.target.value)}
-                      className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
+                      className="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg"
                     >
                       <option value="Medical">Medical</option>
                       <option value="Personal">Personal</option>
@@ -150,64 +117,56 @@ const LeavePortal = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-gray-300 mb-1">Start Date</label>
+                    <label className="block mb-1">Start Date</label>
                     <input
                       type="datetime-local"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
-                      className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
+                      className="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg"
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-300 mb-1">End Date</label>
+                    <label className="block mb-1">End Date</label>
                     <input
                       type="datetime-local"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
+                      className="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg"
                     />
                   </div>
                   <div>
-                    <label htmlFor="reason" className="block text-gray-300 mb-1">
-                      Reason
-                    </label>
+                    <label className="block mb-1">Reason</label>
                     <textarea
-                      id="reason"
                       rows="4"
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
-                      className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2"
-                      placeholder="Explain your reason for leave..."
+                      className="w-full p-2 bg-gray-700 border border-gray-600 rounded-lg"
                     ></textarea>
                   </div>
                   <button
                     type="submit"
-                    disabled={isSubmitting || isRequestingOtp}
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                    disabled={isRequestingOtp}
+                    className="w-full bg-blue-600 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
                   >
-                    {isRequestingOtp ? 'Requesting OTP...' : isSubmitting ? 'Submitting...' : 'Apply for Leave'}
+                    {isRequestingOtp ? 'Requesting OTP...' : 'Apply for Leave'}
                   </button>
                 </form>
               </div>
 
-              {/* Right Half - Leave List */}
+              {/* Leave List */}
               <div className="bg-gray-800 rounded-2xl shadow-xl p-6">
-                <h2 className="text-2xl font-semibold text-white mb-6">
-                  Your Leave Requests
-                </h2>
+                <h2 className="text-2xl font-semibold mb-6">Your Leave Requests</h2>
                 {leaveList.length === 0 ? (
-                  <p className="text-gray-400 text-center italic">
-                    No leave applications yet.
-                  </p>
+                  <p className="text-gray-400 italic text-center">No leave applications yet.</p>
                 ) : (
                   <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
-                    {leaveList.map((item) => (
+                    {leaveList.map((item, idx) => (
                       <div
-                        key={item.id}
-                        className="p-4 bg-gray-700 rounded-lg border border-gray-600 hover:bg-gray-600 transition-colors"
+                        key={idx}
+                        className="bg-gray-700 p-4 rounded-lg border border-gray-600 hover:bg-gray-600"
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center space-x-2">
+                        <div className="flex justify-between mb-2">
+                          <div className="flex items-center gap-2">
                             <span
                               className={`w-3 h-3 rounded-full ${
                                 {
@@ -218,9 +177,7 @@ const LeavePortal = () => {
                                 }[item.leaveType] || 'bg-gray-400'
                               }`}
                             ></span>
-                            <span className="font-medium text-gray-200">
-                              {item.leaveType}
-                            </span>
+                            <span className="font-medium">{item.leaveType}</span>
                           </div>
                           <span className="text-sm text-gray-400">
                             {new Date(item.startDate).toLocaleDateString()} -{' '}
@@ -230,7 +187,7 @@ const LeavePortal = () => {
                         <p className="text-gray-300">{item.reason}</p>
                         <div className="mt-2">
                           <span
-                            className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
+                            className={`px-2 py-1 text-xs rounded-full font-semibold ${
                               item.status === 'Pending'
                                 ? 'bg-yellow-100 text-yellow-800'
                                 : item.status === 'Approved'
@@ -253,32 +210,33 @@ const LeavePortal = () => {
 
       {/* OTP Modal */}
       {showOtpModal && (
-        <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-2xl shadow-xl p-6 w-full max-w-md">
-            <h2 className="text-2xl font-semibold text-white mb-4 text-center">
-              Enter OTP
-            </h2>
-            <p className="text-gray-300 mb-4 text-center">
-              Please enter the OTP sent to your parent's registered email address.
+        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 rounded-2xl w-full max-w-md shadow-xl">
+            <h2 className="text-2xl font-semibold text-center mb-4">Enter OTP</h2>
+            <p className="text-gray-300 text-center mb-4">
+              Please enter the OTP sent to your parent's email.
             </p>
             <input
               type="text"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              className="w-full border border-gray-600 bg-gray-700 text-white rounded-lg p-2 mb-4"
+              className="w-full p-2 mb-4 bg-gray-700 border border-gray-600 rounded-lg"
               placeholder="Enter OTP"
             />
             <div className="flex justify-between">
               <button
-                onClick={handleOtpCancel}
-                className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
+                onClick={() => {
+                  setOtp('');
+                  setShowOtpModal(false);
+                }}
+                className="bg-gray-600 px-4 py-2 rounded-lg hover:bg-gray-700"
               >
                 Cancel
               </button>
               <button
                 onClick={handleOtpSubmit}
-                disabled={isSubmitting || !otp.trim()}
-                className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                disabled={isSubmitting}
+                className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
               >
                 {isSubmitting ? 'Submitting...' : 'Submit OTP'}
               </button>
