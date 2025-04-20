@@ -10,7 +10,8 @@ import './App.css';
 import Leave from './Leave';
 import Community from './Community';
 import Profile from './Profile';
-import ProtectedRoute from './ProtectedRoute'; // ← import this
+import ProtectedRoute from './ProtectedRoute'; 
+import YourPosts from './yourposts';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/dashboard/mess" element={<ProtectedRoute><Mess /></ProtectedRoute>} />
         <Route path="/dashboard/Community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+        <Route path="/dashboard/Community/yourposts" element={<ProtectedRoute><YourPosts /></ProtectedRoute>} />
         <Route path="/dashboard/Complaints" element={<ProtectedRoute><Complaints /></ProtectedRoute>} />
         <Route path="/dashboard/Profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/dashboard/Leave" element={<ProtectedRoute><Leave /></ProtectedRoute>} />

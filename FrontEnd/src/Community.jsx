@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Navbar from './Components/NavBar';
 import SideBar from './Components/SideBar';
+import { Link } from 'react-router-dom';
 
 const Community = () => {
   const [posts, setPosts] = useState([]);
@@ -12,6 +13,7 @@ const Community = () => {
   const [filter, setFilter] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [showPostForm, setShowPostForm] = useState(false);
   const fileInputRef = useRef(null);
 
   const hashtagSuggestions = [
@@ -100,6 +102,7 @@ const Community = () => {
       setHashtags('');
       setSelectedImage(null);
       setImagePreview(null);
+      setShowPostForm(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -204,6 +207,9 @@ const Community = () => {
     }
   ];
 
+  // Admin post gradient (used for borders and tags)
+  const adminGradient = "from-amber-500 to-red-600";
+
   return (
     <div className="bg-gray-900 min-h-screen">
       <Navbar />
@@ -213,115 +219,25 @@ const Community = () => {
         <div className="p-4">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-white">Community Posts</h1>
-            <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-all duration-150 flex items-center gap-2">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-              </svg>
-              Your Posts
-            </button>
-          </div>
-          
-          {/* Create post form with gradient border */}
-          <div className="mb-6 p-[1px] rounded-lg bg-gradient-to-r from-purple-500 to-pink-500">
-            <div className="bg-gray-800 rounded-lg p-4 shadow-lg">
-              <form onSubmit={handleSubmitPost}>
-                <div className="mb-4">
-                  <textarea
-                    className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    rows="4"
-                    placeholder="Share something with the community..."
-                    value={newPost}
-                    onChange={(e) => setNewPost(e.target.value)}
-                  ></textarea>
-                </div>
-                
-                {/* Image upload preview */}
-                {imagePreview && (
-                  <div className="mb-4 relative">
-                    <img 
-                      src={imagePreview} 
-                      alt="Preview" 
-                      className="max-h-60 rounded-lg mx-auto object-contain bg-gray-700 p-2" 
-                    />
-                    <button 
-                      type="button"
-                      onClick={handleRemoveImage}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-                      </svg>
-                    </button>
-                  </div>
-                )}
-                
-                <div className="flex flex-wrap gap-3 mb-4">
-                  {/* Image upload button */}
-                  <label className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg cursor-pointer transition-colors">
+            <div className="flex gap-2">
+              <button 
+                onClick={() => setShowPostForm(true)}
+                className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium rounded-lg transition-all duration-150 flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Create Post
+              </button>
+              <Link to="/dashboard/Community/yourposts">
+                <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-all duration-150 flex items-center gap-2">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                     </svg>
-                    Add Image
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleImageChange}
-                      ref={fileInputRef}
-                    />
-                  </label>
-                  
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      className="w-full bg-gray-700 text-white rounded-lg p-2 border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Add hashtags separated by commas (e.g., event, question)"
-                      value={hashtags}
-                      onChange={(e) => setHashtags(e.target.value)}
-                    />
-                  </div>
-                </div>
-                
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {hashtagSuggestions.map((tag) => (
-                    <button
-                      key={tag}
-                      type="button"
-                      className={`text-xs ${tag === 'Admin' ? 'bg-gradient-to-r from-purple-500 to-pink-500' : 'bg-gray-700 hover:bg-gray-600'} text-white px-2 py-1 rounded-full transition-colors`}
-                      onClick={() => {
-                        const newTag = tag.startsWith('#') ? tag : `#${tag}`;
-                        const currentTags = hashtags.split(',').map(t => t.trim()).filter(t => t);
-                        if (!currentTags.includes(newTag)) {
-                          setHashtags(prev => prev ? `${prev}, ${newTag}` : newTag);
-                        }
-                      }}
-                    >
-                      #{tag}
-                    </button>
-                  ))}
-                </div>
-                
-                <div className="flex justify-end">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium rounded-lg transition-all duration-150 flex items-center"
-                  >
-                    {loading ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Posting...
-                      </>
-                    ) : (
-                      "Post"
-                    )}
-                  </button>
-                </div>
-              </form>
+                    Your Posts
+                </button>
+              </Link>
             </div>
           </div>
           
@@ -347,7 +263,7 @@ const Community = () => {
               filterPosts().map((post, index) => (
                 <div 
                   key={post.id || index} 
-                  className={`${post.isAdminPost ? 'p-[1px] bg-gradient-to-r from-purple-500 to-pink-500' : ''} rounded-lg transition-all duration-200 hover:shadow-xl`}
+                  className={`${post.isAdminPost ? `p-[3px] bg-gradient-to-r ${adminGradient}` : ''} rounded-lg transition-all duration-200 hover:shadow-xl`}
                 >
                   <div className="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
                     <div className="flex items-start gap-3">
@@ -388,7 +304,7 @@ const Community = () => {
                               key={i} 
                               className={`text-xs px-2 py-1 rounded-full ${
                                 tag.toLowerCase() === '#admin' 
-                                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' 
+                                  ? `bg-gradient-to-r ${adminGradient} text-white font-medium` 
                                   : 'bg-gray-700 text-blue-400'
                               }`}
                             >
@@ -469,6 +385,132 @@ const Community = () => {
           </div>
         </div>
       </div>
+
+      {/* Post Creation Modal/Popup */}
+      {showPostForm && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="max-w-2xl w-full">
+            {/* Post creation form with gradient border */}
+            <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 to-pink-500">
+              <div className="bg-gray-800 rounded-lg p-4 shadow-lg relative">
+                <button 
+                  onClick={() => setShowPostForm(false)}
+                  className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+
+                <h2 className="text-xl font-bold text-white mb-4">Create a Post</h2>
+                
+                <form onSubmit={handleSubmitPost}>
+                  <div className="mb-4">
+                    <textarea
+                      className="w-full bg-gray-700 text-white rounded-lg p-3 border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      rows="4"
+                      placeholder="Share something with the community..."
+                      value={newPost}
+                      onChange={(e) => setNewPost(e.target.value)}
+                      autoFocus
+                    ></textarea>
+                  </div>
+                  
+                  {/* Image upload preview */}
+                  {imagePreview && (
+                    <div className="mb-4 relative">
+                      <img 
+                        src={imagePreview} 
+                        alt="Preview" 
+                        className="max-h-60 rounded-lg mx-auto object-contain bg-gray-700 p-2" 
+                      />
+                      <button 
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                  
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    {/* Image upload button */}
+                    <label className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg cursor-pointer transition-colors">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                      Add Image
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageChange}
+                        ref={fileInputRef}
+                      />
+                    </label>
+                    
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        className="w-full bg-gray-700 text-white rounded-lg p-2 border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Add hashtags separated by commas (e.g., event, question)"
+                        value={hashtags}
+                        onChange={(e) => setHashtags(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {hashtagSuggestions.map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        className={`text-xs ${
+                          tag === 'Admin' 
+                            ? `bg-gradient-to-r ${adminGradient}` 
+                            : 'bg-gray-700 hover:bg-gray-600'
+                        } text-white px-2 py-1 rounded-full transition-colors`}
+                        onClick={() => {
+                          const newTag = tag.startsWith('#') ? tag : `#${tag}`;
+                          const currentTags = hashtags.split(',').map(t => t.trim()).filter(t => t);
+                          if (!currentTags.includes(newTag)) {
+                            setHashtags(prev => prev ? `${prev}, ${newTag}` : newTag);
+                          }
+                        }}
+                      >
+                        #{tag}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium rounded-lg transition-all duration-150 flex items-center"
+                    >
+                      {loading ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Posting...
+                        </>
+                      ) : (
+                        "Post"
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
