@@ -32,7 +32,7 @@ const userSchema = new mongooose.Schema({
     avatarURL: {
         type: String,
         required: false,
-        default:""
+        default:" "
     },
     gender: {
         type: String,
