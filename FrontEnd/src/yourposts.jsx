@@ -14,13 +14,11 @@ const YourPosts = () => {
     const fetchUserPosts = async () => {
       try {
         setLoadingPosts(true);
-        // In a real app, you'd filter by the current user ID from auth
-        const response = await axios.get('/api/user-posts');
-        // For demo purposes, we'll filter the mock posts as if they're the current user's
-        setPosts(response.data || mockUserPosts);
+        const response = await axios.get('/api/student/community-posts/my'); // Adjust the endpoint as needed
+        setPosts(response.data);
       } catch (error) {
         console.error("Error fetching your posts:", error);
-        setPosts(mockUserPosts);
+        setPosts([]); // or show a toast/alert
       } finally {
         setLoadingPosts(false);
       }
@@ -32,11 +30,16 @@ const YourPosts = () => {
   const handleDeletePost = async (postId) => {
     try {
       setDeletingPostId(postId);
-      // In a real app, you'd send a delete request to your API
-      // await axios.delete(`/api/posts/${postId}`);
-      
-      // For demo, we'll just remove it from the state
-      setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+
+      // Assuming post._id is the unique identifier in MongoDB
+      await axios.delete(`/api/student/community-posts/${postId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // or however you store your JWT
+        },
+      });
+
+      // Filter out the deleted post
+      setPosts(prevPosts => prevPosts.filter(post => post._id !== postId));
     } catch (error) {
       console.error("Error deleting post:", error);
     } finally {
@@ -44,59 +47,17 @@ const YourPosts = () => {
     }
   };
 
-  const handleVote = async (postId, voteType) => {
-    try {
-      setPosts(prevPosts => 
-        prevPosts.map(post => {
-          if (post.id === postId) {
-            // If user already voted this way, remove the vote
-            if (post.userVote === voteType) {
-              return {
-                ...post,
-                upvotes: voteType === 'upvote' ? post.upvotes - 1 : post.upvotes,
-                downvotes: voteType === 'downvote' ? post.downvotes - 1 : post.downvotes,
-                userVote: null
-              };
-            } 
-            // If user voted the opposite way, remove old vote and add new one
-            else if (post.userVote !== null) {
-              return {
-                ...post,
-                upvotes: voteType === 'upvote' ? post.upvotes + 1 : post.upvotes - (post.userVote === 'upvote' ? 1 : 0),
-                downvotes: voteType === 'downvote' ? post.downvotes + 1 : post.downvotes - (post.userVote === 'downvote' ? 1 : 0),
-                userVote: voteType
-              };
-            } 
-            // If user hasn't voted yet
-            else {
-              return {
-                ...post,
-                upvotes: voteType === 'upvote' ? post.upvotes + 1 : post.upvotes,
-                downvotes: voteType === 'downvote' ? post.downvotes + 1 : post.downvotes,
-                userVote: voteType
-              };
-            }
-          }
-          return post;
-        })
-      );
-    } catch (error) {
-      console.error("Error voting on post:", error);
-    }
-  };
-
   const filterPosts = () => {
     if (!filter) return posts;
-    return posts.filter(post => 
+    return posts.filter(post =>
       post.content.toLowerCase().includes(filter.toLowerCase()) ||
       post.hashtags.some(tag => tag.toLowerCase().includes(filter.toLowerCase()))
     );
   };
 
- 
   const mockUserPosts = [
     {
-      id: 2,
+      _id: 2,
       content: "Movie night this Saturday in the common room! Bring snacks and good vibes.",
       hashtags: ["#Event", "#Social", "#MovieNight"],
       author: {
@@ -110,7 +71,7 @@ const YourPosts = () => {
       isAdminPost: false
     },
     {
-      id: 4,
+      _id: 4,
       content: "Has anyone found a blue notebook in the library? I think I left it there yesterday.",
       hashtags: ["#Question", "#Lost"],
       author: {
@@ -170,7 +131,7 @@ const YourPosts = () => {
             ) : filterPosts().length > 0 ? (
               filterPosts().map((post, index) => (
                 <div 
-                  key={post.id || index} 
+                  key={post._id || index} 
                   className={`${post.isAdminPost ? `p-[3px] bg-gradient-to-r ${adminGradient}` : ''} rounded-lg transition-all duration-200 hover:shadow-xl`}
                 >
                   <div className="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
@@ -194,11 +155,11 @@ const YourPosts = () => {
                               })}
                             </span>
                             <button
-                              onClick={() => handleDeletePost(post.id)}
+                              onClick={() => handleDeletePost(post._id)}  // Use post._id for delete action
                               className="text-red-500 hover:text-red-400 bg-red-500/10 hover:bg-red-500/20 p-1 rounded transition-all duration-200"
-                              disabled={deletingPostId === post.id}
+                              disabled={deletingPostId === post._id}
                             >
-                              {deletingPostId === post.id ? (
+                              {deletingPostId === post._id ? (
                                 <div className="w-5 h-5 border-t-2 border-r-2 border-red-500 rounded-full animate-spin"></div>
                               ) : (
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -236,16 +197,18 @@ const YourPosts = () => {
                           ))}
                         </div>
                         
-                        {/* Improved vote buttons */}
+                        {/* Upvote and Downvote buttons */}
                         <div className="flex items-center mt-4 space-x-6">
                           {/* Upvote button */}
                           <button 
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
-                              post.userVote === 'upvote' 
-                                ? 'bg-green-500/20 text-green-500 border border-green-500' 
-                                : 'text-gray-400 hover:text-green-500 hover:bg-green-500/10 hover:border-green-500/50 border border-transparent'
-                            } transition-all duration-200`}
-                            onClick={() => handleVote(post.id, 'upvote')}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full cursor-default
+                              ${
+                                post.userVote === 'upvote' 
+                                  ? 'bg-green-500/20 text-green-500 border border-green-500' 
+                                  : 'text-gray-400 border border-transparent'
+                              }
+                            `}
+                            disabled
                           >
                             <svg 
                               className="w-5 h-5" 
@@ -267,12 +230,14 @@ const YourPosts = () => {
                           
                           {/* Downvote button */}
                           <button 
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
-                              post.userVote === 'downvote' 
-                                ? 'bg-red-500/20 text-red-500 border border-red-500' 
-                                : 'text-gray-400 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/50 border border-transparent'
-                            } transition-all duration-200`}
-                            onClick={() => handleVote(post.id, 'downvote')}
+                            className={`flex items-center gap-2 px-3 py-1.5 rounded-full cursor-default
+                              ${
+                                post.userVote === 'downvote' 
+                                  ? 'bg-red-500/20 text-red-500 border border-red-500' 
+                                  : 'text-gray-400 border border-transparent'
+                              }
+                            `}
+                            disabled
                           >
                             <svg 
                               className="w-5 h-5" 
@@ -298,17 +263,7 @@ const YourPosts = () => {
                 </div>
               ))
             ) : (
-              <div className="text-center py-8 bg-gray-800 rounded-lg">
-                <svg className="mx-auto h-12 w-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                </svg>
-                <p className="mt-2 text-gray-400">You haven't created any posts yet.</p>
-                <Link to="/dashboard/Community">
-                  <button className="mt-4 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium rounded-lg transition-all duration-150">
-                    Create Your First Post
-                  </button>
-                </Link>
-              </div>
+              <p className="text-center text-gray-400">No posts found matching the filter.</p>
             )}
           </div>
         </div>

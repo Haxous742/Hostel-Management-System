@@ -583,6 +583,73 @@ studentRouter.get("/community-posts", async (req, res) => {
 
 
 
+studentRouter.delete('/community-posts/:postId', async (req, res) => {
+  const cookie = req.cookies.jwt;
+  const userData = await verifyCookie(cookie);
+
+  if (!userData) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const student = await user.findOne({ email: userData.email });
+    const postId = req.params.postId;
+
+    const post = await CommunityPost.findById(postId).populate('author', 'name avatarURL');
+    if (!post) return res.status(404).json({ message: 'Post not found' });
+
+    // Optional: Only allow author or admin to delete
+    if (!post.author._id.equals(student._id)) {
+      return res.status(403).json({ message: 'Unauthorized to delete this post' });
+    }
+
+    await CommunityPost.findByIdAndDelete(postId);
+
+    res.status(200).json({ message: 'Post deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting post:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+
+studentRouter.get("/community-posts/my", async (req, res) => {
+  const cookie = req.cookies.jwt;
+  const userData = await verifyCookie(cookie);
+
+  if (!userData) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const student = await user.findOne({ email: userData.email });
+    const posts = await CommunityPost.find({author: student._id})
+      .populate('author', 'name avatarURL')
+      .sort({ timestamp: -1 });
+
+    const userVotes = await UserVote.find({ userId: student._id });
+    const voteMap = {};
+    userVotes.forEach(vote => {
+      voteMap[vote.postId] = vote.voteType;
+    });
+
+    const postsWithVote = posts.map(post => ({
+      ...post.toObject(),
+      userVote: voteMap[post._id] || null,
+    }));
+
+    res.status(200).json(postsWithVote);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+
+
+
+
+
 
 
 
