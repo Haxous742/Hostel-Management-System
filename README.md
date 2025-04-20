@@ -91,21 +91,3 @@ A full-stack application built to digitize and streamline hostel operations at *
 
 ---
 
-## ▶️ Usage
-
-- Make sure CORS is enabled if frontend and backend run on different ports.
-- Use `axios` for frontend API calls.
-- For production, build frontend using `npm run build` and serve via Express.
-
----
-
-## 👥 Contributors
-
-- [@Haxous742](https://github.com/Haxous742)
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
