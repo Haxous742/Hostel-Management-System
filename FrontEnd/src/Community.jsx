@@ -3,6 +3,8 @@ import axios from 'axios';
 import Navbar from './Components/NavBar';
 import SideBar from './Components/SideBar';
 import { Link } from 'react-router-dom';
+import { storage } from './firebase'; // Adjust the import based on your firebase config file
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const Community = () => {
   const [posts, setPosts] = useState([]);
@@ -25,7 +27,7 @@ const Community = () => {
     const fetchPosts = async () => {
       try {
         setLoadingPosts(true);
-        const response = await axios.get('/api/community-posts');
+        const response = await axios.get('/api/student/community-posts');
         setPosts(response.data || mockPosts);
       } catch (error) {
         console.error("Error fetching posts:", error);
@@ -58,10 +60,17 @@ const Community = () => {
     }
   };
 
+
+
+
+
+
+
+
   const handleSubmitPost = async (e) => {
     e.preventDefault();
     if (!newPost.trim() && !selectedImage) return;
-
+  
     try {
       setPending(true);
       const hashtagArray = hashtags
@@ -69,34 +78,36 @@ const Community = () => {
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0)
         .map(tag => tag.startsWith('#') ? tag : `#${tag}`);
-
-      // Check if Admin hashtag is included
-      const isAdminPost = hashtagArray.some(tag => 
-        tag.toLowerCase() === '#admin'
-      );
-
-      // In a real app, you'd upload the image and get a URL back
+  
+      const isAdminPost = hashtagArray.some(tag => tag.toLowerCase() === '#admin');
+  
       let imageURL = null;
       if (selectedImage) {
-        // This is a placeholder for your actual image upload logic
-        imageURL = imagePreview; // Just for demo purposes
+        const fileRef = ref(storage, `communityPosts/${localStorage.getItem('email') || 'user'}/${Date.now()}_${selectedImage.name}`);
+        await uploadBytes(fileRef, selectedImage);
+        imageURL = await getDownloadURL(fileRef);
       }
-
-      const newPostData = {
+  
+      const response = await axios.post('/api/student/community-posts', {
         content: newPost,
         hashtags: hashtagArray,
+        imageURL,
+      }, {
+        withCredentials: true, // Send JWT cookie
+      });
+  
+      const newPostData = {
+        ...response.data.post,
         author: {
-          name: "Current User", 
-          avatarURL: localStorage.getItem('avatarURL') || '../public/img/default-avatar.png'
+          name: response.data.post.author.name,
+          avatarURL: response.data.post.author.avatarURL,
         },
-        timestamp: new Date().toISOString(),
+        timestamp: response.data.post.timestamp,
         upvotes: 0,
         downvotes: 0,
         userVote: null,
-        isAdminPost,
-        imageURL
       };
-
+  
       setPosts(prevPosts => [newPostData, ...prevPosts]);
       setNewPost('');
       setHashtags('');
@@ -108,10 +119,32 @@ const Community = () => {
       }
     } catch (error) {
       console.error("Error creating post:", error);
+      // Add error state or alert for user feedback
+     
     } finally {
       setPending(false);
     }
   };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const handleVote = async (postId, voteType) => {
     try {

@@ -9,7 +9,7 @@ import Menu from "../model/menu_model.js";
 import sendMail from "../service/email.js";
 
 
-
+import CommunityPost from "../model/post_model.js";
 
 
 const studentRouter = Router();
@@ -488,6 +488,134 @@ studentRouter.post('/leave/delete', async (req, res) => {
   } catch (err) {
     console.error("Error deleting leave request:", err);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
+
+
+
+
+
+
+// POST a new community post (frontend provides imageURL)
+studentRouter.post("/community-posts", async (req, res) => {
+  const cookie = req.cookies.jwt;
+  const userData = await verifyCookie(cookie);
+
+  if (!userData) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const { content, hashtags, imageURL } = req.body;
+
+  if (!content || !hashtags || !Array.isArray(hashtags)) {
+    return res.status(400).json({ message: "Invalid input data" });
+  }
+
+  try {
+    const student = await user.findOne({ email: userData.email });
+    if (!student) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const hashtagArray = hashtags.map(tag => tag.startsWith('#') ? tag : `#${tag}`);
+    const isAdminPost = hashtagArray.some(tag => tag.toLowerCase() === '#admin');
+
+    const newPost = new CommunityPost({
+      content,
+      hashtags: hashtagArray,
+      author: student._id,
+      isAdminPost,
+      imageURL, // Store the URL provided by the frontend
+    });
+
+    await newPost.save();
+
+    const populatedPost = await CommunityPost.findById(newPost._id).populate('author', 'name avatarURL');
+
+    res.status(201).json({ message: "Post created successfully", post: populatedPost });
+  } catch (error) {
+    console.error("Error creating post:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+
+
+
+
+
+
+
+// GET all community posts
+studentRouter.get("/community-posts", async (req, res) => {
+  const cookie = req.cookies.jwt;
+  const userData = await verifyCookie(cookie);
+
+  if (!userData) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const posts = await CommunityPost.find()
+      .populate('author', 'name avatarURL')
+      .sort({ timestamp: -1 });
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+// POST to update vote on a community post
+studentRouter.post("/community-posts/:id/vote", async (req, res) => {
+  const cookie = req.cookies.jwt;
+  const userData = await verifyCookie(cookie);
+
+  if (!userData) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const { id } = req.params;
+  const { voteType } = req.body; // 'upvote' or 'downvote'
+
+  if (!['upvote', 'downvote'].includes(voteType)) {
+    return res.status(400).json({ message: "Invalid vote type" });
+  }
+
+  try {
+    const student = await user.findOne({ email: userData.email });
+    if (!student) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const post = await CommunityPost.findById(id);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Simple vote logic
+    if (post.userVote === voteType) {
+      post[voteType === 'upvote' ? 'upvotes' : 'downvotes'] -= 1;
+      post.userVote = null;
+    } else if (post.userVote) {
+      post[voteType === 'upvote' ? 'upvotes' : 'downvotes'] += 1;
+      post[voteType === 'upvote' ? 'downvotes' : 'upvotes'] -= 1;
+      post.userVote = voteType;
+    } else {
+      post[voteType === 'upvote' ? 'upvotes' : 'downvotes'] += 1;
+      post.userVote = voteType;
+    }
+
+    await post.save();
+
+    res.status(200).json({ message: "Vote updated successfully", post });
+  } catch (error) {
+    console.error("Error voting on post:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 
