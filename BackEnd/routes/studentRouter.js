@@ -573,9 +573,6 @@ studentRouter.get("/community-posts", async (req, res) => {
 
 
 
-
-
-// POST to update vote on a community post
 studentRouter.post("/community-posts/:id/vote", async (req, res) => {
   const cookie = req.cookies.jwt;
   const userData = await verifyCookie(cookie);
@@ -602,17 +599,29 @@ studentRouter.post("/community-posts/:id/vote", async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    // Simple vote logic
-    if (post.userVote === voteType) {
-      post[voteType === 'upvote' ? 'upvotes' : 'downvotes'] -= 1;
-      post.userVote = null;
-    } else if (post.userVote) {
-      post[voteType === 'upvote' ? 'upvotes' : 'downvotes'] += 1;
-      post[voteType === 'upvote' ? 'downvotes' : 'upvotes'] -= 1;
-      post.userVote = voteType;
-    } else {
-      post[voteType === 'upvote' ? 'upvotes' : 'downvotes'] += 1;
-      post.userVote = voteType;
+    // Simple vote logic for aggregate counts
+    if (voteType === 'upvote') {
+      if (post.upvotes > 0 && post.userVote === 'upvote') {
+        post.upvotes -= 1;
+        post.userVote = null;
+      } else {
+        if (post.userVote === 'downvote') {
+          post.downvotes -= 1;
+        }
+        post.upvotes += 1;
+        post.userVote = 'upvote';
+      }
+    } else if (voteType === 'downvote') {
+      if (post.downvotes > 0 && post.userVote === 'downvote') {
+        post.downvotes -= 1;
+        post.userVote = null;
+      } else {
+        if (post.userVote === 'upvote') {
+          post.upvotes -= 1;
+        }
+        post.downvotes += 1;
+        post.userVote = 'downvote';
+      }
     }
 
     await post.save();
@@ -623,8 +632,6 @@ studentRouter.post("/community-posts/:id/vote", async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
-
-
 
 
 
