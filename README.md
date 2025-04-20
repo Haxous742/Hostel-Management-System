@@ -12,7 +12,7 @@ A full-stack application built to digitize and streamline hostel operations at *
 - [Tech Stack](#-tech-stack)
 - [Installation Guide](#-installation-guide)
 - [Usage](#-usage)
-
+- [Implementation Overview](#-implementation-overview)
 
 ---
 
@@ -35,8 +35,8 @@ A full-stack application built to digitize and streamline hostel operations at *
 
 - **Frontend**: React (Vite), Tailwind CSS, Flowbite React  
 - **Backend**: Node.js, Express.js  
-- **Database**: MongoDB ( Atlas)  
-- **Authentication**: JWT tokens , nodemailer.
+- **Database**: MongoDB (Atlas)  
+- **Authentication**: JWT tokens, nodemailer  
 
 ---
 
@@ -69,11 +69,9 @@ A full-stack application built to digitize and streamline hostel operations at *
    npm install
    ```
 
-
-
 5. **Run the Application**:
 
-   For the simplicity of the installations , we have given out our api keys in the "./env" file , We understnad that this is not a good practice.
+   For the simplicity of the installations, we have given out our API keys in the `./env` file. We understand that this is not a good practice.
 
    - In one terminal, run frontend:
      ```bash
@@ -90,4 +88,49 @@ A full-stack application built to digitize and streamline hostel operations at *
      API: [http://localhost:5000](http://localhost:5000)
 
 ---
+
+## ⚖️ Implementation Overview
+
+This project has been structured with modularity, clarity, and scalability in mind.
+
+### 🚀 Frontend (React + Tailwind + Flowbite)
+
+- **Folder Structure**: Pages are componentized by feature (e.g., Dashboard, LeaveForm, Complaints, Profile).
+- **Routing**: React Router DOM is used to manage navigation between pages, with protected routes for authentication.
+- **Community Feed**: Uses context API for shared state of posts and real-time display of top 3 in dashboard.
+- **Mess Rating**: Users can give feedback through star ratings; data is synced to the backend.
+- **Forms**: Complaint and Leave forms include field validation, dynamic dropdowns, and submit state UX improvements.
+
+### 🧰 Backend (Node.js + Express)
+
+- **Authentication**:
+  - JWT tokens are used for secure authentication.
+  - Middleware checks for user roles (admin/student) to manage access control.
+- **OTP System**:
+  - `nodemailer` is integrated to send OTPs to parent email IDs during leave applications.
+  - OTPs are hashed and time-limited to enhance security.
+- **Leave System**:
+  - Two MongoDB collections handle temporary (unverified) and verified leaves.
+  - Once OTP is confirmed, the leave is moved to a permanent schema.
+- **Complaint Management**:
+  - Complaints are stored in MongoDB with `status`, `type`, and `studentId`.
+  - Admin routes allow toggling complaint resolution status.
+
+### 📃 Database (MongoDB)
+
+- **Mongoose Models**:
+  - `User`: student data and profile info
+  - `Complaint`: detailed structure including type, message, resolution status
+  - `LeaveRequest`: structure for both temporary and permanent leaves
+  - `CommunityPost`: includes hashtags, image URL, and author
+
+### ⚖️ Admin Panel
+
+- Admin can see lists of all active complaints and pending leave applications.
+- One-click approval or rejection of leaves.
+- Option to delete community posts and flag user reports.
+
+---
+
+This implementation demonstrates clean RESTful design, proper schema validation, and a user-friendly interface for both students and admins.
 
