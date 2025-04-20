@@ -127,7 +127,7 @@ const Navbar = ({ onLogout }) => {
                   <span className="sr-only">Open user menu</span>
                   <img
                     className="w-9 h-9 rounded-full border-2 border-blue-500 dark:border-blue-400 object-cover transition-transform duration-200 hover:scale-105"
-                    src="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                    src={localStorage.getItem('avatarURL')||'../public/img/default-avatar.png'}
                     alt="user photo"
                   />
                 </button>
@@ -150,8 +150,17 @@ const Navbar = ({ onLogout }) => {
                     </li>
                     <li>
                       <a
-                        href="#"
-                        onClick={onLogout}
+                        hhref="/"
+                        onClick={async()=>{
+                          
+                          const response = await fetch('/api/logout', {
+                            method: 'POST',
+                            credentials: 'include',
+                          });
+                          if(response.ok){
+                            navigate('/');}
+                          
+                        }}
                         className="inline-block mx-4 mt-1 mb-2 px-4 py-1 text-sm text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 rounded-lg transition-all duration-150 ease-in-out transform hover:scale-105"
                       >
                         Log out
