@@ -193,6 +193,12 @@ This image highlights the **OTP Verification Page**:
 - Ensures that **parental awareness and approval** is incorporated in the leave process.
 
 ---
+![My Photo](photos/otpmail.png)
+#### 🖼️ `otpforleave.png`
+This is the mail that goes to the parents.
+
+
+---
 
 ![My Photo](photos/complaints.png)
 #### 🖼️ `complaints.png`
