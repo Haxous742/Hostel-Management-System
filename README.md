@@ -151,5 +151,68 @@ These models are interlinked through references (e.g., `studentId` in complaints
 
 ---
 
+
+
+
+
+
+
+
+
+### 📸 Image Breakdown – Hostel Management System
+
+---
+
+#### 🖼️ `dashboard.png`
+![My Photo](photos/dashboard.png)
+This screenshot displays the **Student Dashboard** – the central hub for all users. It includes:
+- The **next upcoming meal** with item details.
+- A mini feed showing **top community posts**.
+- A birthday section to highlight **students' birthdays**.
+
+The goal is to give students a quick glance at what's new and relevant the moment they log in.
+
+---
+
+![My Photo](photos/leave.png)
+#### 🖼️ `leave.png`
+This image showcases the **Leave Application Form**:
+- Students can submit a leave request by entering details like **departure and return dates**, **reason**, and **type of leave**.
+- Parent's email is required, as an **OTP verification system** is tied to the email for security.
+- User-friendly dropdowns and input fields make the form intuitive.
+
+---
+
+![My Photo](photos/complaints.png)
+#### 🖼️ `complaints.png`
+This screenshot represents the **Complaints Section**:
+- Students can file complaints related to **Mess**, **Rooms**, **Gym**, **MPH**, etc.
+- Each complaint includes a **type**, **description**, and a **status indicator** (Pending/Resolved).
+- Easy tracking of submitted complaints and status updates promotes transparency.
+
+---
+
+![My Photo](photos/menu.png)
+#### 🖼️ `menu.png`
+The image here is of the **Mess Menu Interface**:
+- Daily menu displayed in a clean layout (Breakfast, Lunch, and Dinner).
+- Students can view upcoming meals.
+- Each meal can be **rated**, and the feedback goes directly into the backend for administrative review.
+
+---
+
+![My Photo](photos/otpforleave.png)
+#### 🖼️ `otpforleave.png`
+This image highlights the **OTP Verification Page**:
+- Once the leave form is submitted, an OTP is sent to the parent's registered email.
+- Students are redirected to this screen to enter the OTP.
+- Ensures that **parental awareness and approval** is incorporated in the leave process.
+
+---
+
+These visuals reflect a modern, clean, and practical user interface aimed at improving the experience of both students and admins in managing hostel-related workflows.
+
+
+
 This implementation demonstrates clean RESTful design, proper schema validation, and a user-friendly interface for both students and admins.
 
