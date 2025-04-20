@@ -64,7 +64,8 @@ const Complaints = () => {
             </h1>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Left - Complaint Form */}
-              <div className="bg-gray-800 rounded-2xl shadow-xl p-6 h-[500px] overflow-hidden">
+              <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 to-pink-500">
+               <div className="bg-gray-800 rounded-2xl shadow-xl p-6 h-[500px] overflow-hidden">
                 <h2 className="text-2xl font-semibold text-white mb-4">
                   Submit a Complaint
                 </h2>
@@ -111,8 +112,10 @@ const Complaints = () => {
                   </form>
                 </div>
               </div>
+              </div>
 
               {/* Right - Complaints List */}
+              <div className="p-[1px] rounded-lg bg-gradient-to-r from-amber-500 to-red-600">
               <div className="bg-gray-800 rounded-2xl shadow-xl p-6 h-[500px] overflow-hidden">
                 <h2 className="text-2xl font-semibold text-white mb-4">
                   Your Complaints
@@ -182,6 +185,7 @@ const Complaints = () => {
                       </div>
                     ))
                   )}
+                </div>
                 </div>
               </div>
             </div>

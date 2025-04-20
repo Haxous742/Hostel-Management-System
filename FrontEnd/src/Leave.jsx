@@ -113,6 +113,7 @@ const LeavePortal = () => {
             </h1>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Leave Form */}
+              <div className="p-[1px] rounded-lg bg-gradient-to-r from-purple-500 to-pink-500">
               <div className="bg-gray-800 rounded-2xl shadow-xl p-6 h-[600px] overflow-hidden flex flex-col">
                 <h2 className="text-2xl font-semibold mb-4">Apply for Leave</h2>
                 <form
@@ -167,9 +168,11 @@ const LeavePortal = () => {
                     {isRequestingOtp ? 'Requesting OTP...' : 'Apply for Leave'}
                   </button>
                 </form>
+                </div>
               </div>
 
               {/* Leave List */}
+              <div className="p-[1px] rounded-lg bg-gradient-to-r from-amber-500 to-red-600">
               <div className="bg-gray-800 rounded-2xl shadow-xl p-6 h-[600px] overflow-hidden flex flex-col">
                 <h2 className="text-2xl font-semibold mb-4">Your Leave Requests</h2>
                 {leaveList.length === 0 ? (
@@ -224,6 +227,7 @@ const LeavePortal = () => {
                     ))}
                   </div>
                 )}
+              </div>
               </div>
             </div>
           </div>

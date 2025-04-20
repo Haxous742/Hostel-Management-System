@@ -15,6 +15,7 @@ const Dashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [loadingMeals, setLoadingMeals] = useState(true);
   const [loadingBirthdays, setLoadingBirthdays] = useState(true);
+  const [activeMealTab, setActiveMealTab] = useState('');
 
   // Verify cookie on load
   useEffect(() => {
@@ -113,16 +114,6 @@ const Dashboard = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const handleLogout = () => {
-    axios.post('/api/logout')
-      .then(() => {
-        navigate("/");
-      })
-      .catch((error) => {
-        console.log("Logout error:", error);
-      });
-  };
-
   // Function to determine next meal based on current time
   const getNextMeal = () => {
     const hours = currentTime.getHours();
@@ -152,6 +143,22 @@ const Dashboard = () => {
   const getTimeInMinutes = (timeString) => {
     const [hours, minutes] = timeString.split(':').map(Number);
     return hours * 60 + minutes;
+  };
+
+  // Set active meal tab on component mount
+  useEffect(() => {
+    const nextMeal = getNextMeal();
+    setActiveMealTab(nextMeal);
+  }, [meals]);
+
+  const handleLogout = () => {
+    axios.post('/api/logout')
+      .then(() => {
+        navigate("/");
+      })
+      .catch((error) => {
+        console.log("Logout error:", error);
+      });
   };
 
   // Mock data
@@ -375,7 +382,7 @@ const Dashboard = () => {
             
             {/* Right Column - Today's Menu & Birthdays */}
             <div className="lg:col-span-1">
-              {/* Today's Meal */}
+              {/* Today's Meal - UPDATED COMPONENT */}
               <div className="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700 mb-6">
                 <h2 className="text-xl font-semibold text-white mb-4">Today's Meals</h2>
                 
@@ -386,7 +393,8 @@ const Dashboard = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="bg-gray-700 rounded-lg p-2 mb-4">
+                    {/* Next Meal Indicator */}
+                    <div className="bg-gray-700 rounded-lg p-3 mb-4">
                       <p className="text-center text-gray-300">
                         <span className="text-blue-400 font-medium">Next Meal: </span>
                         <span className="font-semibold text-white capitalize">{nextMeal}</span>
@@ -396,17 +404,18 @@ const Dashboard = () => {
                       </p>
                     </div>
                     
-                    <div className="space-y-1 mb-4">
-                      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+                    {/* Meal Navigation Tabs with Horizontal Scroll */}
+                    <div className="overflow-x-auto scrollbar-hide mb-4">
+                      <div className="flex space-x-3 min-w-max pb-1">
                         {['breakfast', 'lunch', 'snacks', 'dinner'].map((mealType) => (
                           <button
                             key={mealType}
-                            className={`px-4 py-2 rounded-full whitespace-nowrap ${
-                              nextMeal === mealType
+                            className={`px-4 py-2 rounded-full text-sm whitespace-nowrap ${
+                              activeMealTab === mealType
                                 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium'
                                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                             }`}
-                            onClick={() => document.getElementById(mealType).scrollIntoView({ behavior: 'smooth' })}
+                            onClick={() => setActiveMealTab(mealType)}
                           >
                             {mealType.charAt(0).toUpperCase() + mealType.slice(1)}
                           </button>
@@ -414,13 +423,15 @@ const Dashboard = () => {
                       </div>
                     </div>
                     
-                    <div className="space-y-6 max-h-[280px] overflow-y-auto pr-2" id="meal-container">
-                      {['breakfast', 'lunch', 'snacks', 'dinner'].map((mealType) => {
-                        const meal = meals[mealType];
+                    {/* Active Meal Content - Only show currently selected meal */}
+                    <div className="h-auto">
+                      {Object.keys(meals).map((mealType) => {
+                        if (mealType !== activeMealTab) return null;
                         
+                        const meal = meals[mealType];
                         if (!meal) return null;
                         
-                        // Style the current meal differently
+                        // Style the current meal
                         const isNextMeal = nextMeal === mealType;
                         const cardClass = isNextMeal 
                           ? 'border-blue-500 bg-gradient-to-b from-gray-800 to-gray-900' 
@@ -428,11 +439,10 @@ const Dashboard = () => {
                         
                         return (
                           <div 
-                            key={mealType} 
-                            id={mealType}
+                            key={mealType}
                             className={`rounded-lg p-4 border ${cardClass}`}
                           >
-                            <div className="flex justify-between items-center mb-2">
+                            <div className="flex justify-between items-center mb-3">
                               <h3 className="font-medium text-white capitalize">
                                 {mealType}
                                 {isNextMeal && (
@@ -444,7 +454,7 @@ const Dashboard = () => {
                               </span>
                             </div>
                             
-                            <div className="space-y-1">
+                            <div className="space-y-1 mt-2">
                               {meal.items?.map((item, index) => (
                                 <div key={index} className="flex items-center gap-2">
                                   <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
