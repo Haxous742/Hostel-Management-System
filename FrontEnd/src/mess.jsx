@@ -183,7 +183,7 @@ const Menu = () => {
                               onClick={() => handleRatingChange(mealType, foodItem, star)}
                               className={`text-xl transform transition-transform hover:scale-125 ${
                                 star <= (ratings[currentDay?.day]?.[`${mealType}_${foodItem}`] || 0)
-                                  ? 'text-red-500 dark:text-red-400'
+                                  ? 'text-yellow-400'
                                   : 'text-gray-400 dark:text-gray-500'
                               }`}
                             >
