@@ -56,9 +56,9 @@ const Complaints = () => {
     <div className="min-h-screen bg-gray-900 text-gray-100">
       <Navbar onLogout={handleLogout} />
       <SideBar />
-      <div className="pt-20 sm:pl-64 min-h-screen">
+      <div className="pt-20 sm:pl-64 min-h-screen ">
         <div className="p-6">
-          <div className="container mx-auto max-w-6xl">
+          <div className="container mx-auto max-w-6xl ">
             <h1 className="text-4xl font-bold text-white mb-8 text-center">
               Complaints Portal
             </h1>
