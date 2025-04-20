@@ -7,7 +7,7 @@ import TempLeaveRequest from "../model/tempLeave_model.js";
 import Rating from "../model/rating_model.js";
 import Menu from "../model/menu_model.js";
 import sendMail from "../service/email.js";
-
+import UserVote from "../model/userVote_model.js";
 
 import CommunityPost from "../model/post_model.js";
 
@@ -548,8 +548,6 @@ studentRouter.post("/community-posts", async (req, res) => {
 
 
 
-
-// GET all community posts
 studentRouter.get("/community-posts", async (req, res) => {
   const cookie = req.cookies.jwt;
   const userData = await verifyCookie(cookie);
@@ -559,18 +557,28 @@ studentRouter.get("/community-posts", async (req, res) => {
   }
 
   try {
+    const student = await user.findOne({ email: userData.email });
     const posts = await CommunityPost.find()
       .populate('author', 'name avatarURL')
       .sort({ timestamp: -1 });
 
-    res.status(200).json(posts);
+    const userVotes = await UserVote.find({ userId: student._id });
+    const voteMap = {};
+    userVotes.forEach(vote => {
+      voteMap[vote.postId] = vote.voteType;
+    });
+
+    const postsWithVote = posts.map(post => ({
+      ...post.toObject(),
+      userVote: voteMap[post._id] || null,
+    }));
+
+    res.status(200).json(postsWithVote);
   } catch (error) {
     console.error("Error fetching posts:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
-
-
 
 
 
@@ -589,45 +597,57 @@ studentRouter.post("/community-posts/:id/vote", async (req, res) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  const { id } = req.params;
-  const { voteType } = req.body; // 'upvote' or 'downvote'
+  const { id: postId } = req.params;
+  const { voteType } = req.body; // 'upvote', 'downvote', or null for unvote
 
-  if (!['upvote', 'downvote'].includes(voteType)) {
+  if (![null, 'upvote', 'downvote'].includes(voteType)) {
     return res.status(400).json({ message: "Invalid vote type" });
   }
 
   try {
     const student = await user.findOne({ email: userData.email });
-    if (!student) {
-      return res.status(404).json({ message: "User not found" });
+    if (!student) return res.status(404).json({ message: "User not found" });
+
+    const post = await CommunityPost.findById(postId);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    const existingVote = await UserVote.findOne({ userId: student._id, postId });
+
+    // If user is unvoting
+    if (voteType === null && existingVote) {
+      if (existingVote.voteType === 'upvote') post.upvotes -= 1;
+      else if (existingVote.voteType === 'downvote') post.downvotes -= 1;
+
+      await existingVote.deleteOne();
     }
 
-    const post = await CommunityPost.findById(id);
-    if (!post) {
-      return res.status(404).json({ message: "Post not found" });
+    // If user is casting a new vote
+    else if (!existingVote) {
+      await UserVote.create({ userId: student._id, postId, voteType });
+      if (voteType === 'upvote') post.upvotes += 1;
+      else if (voteType === 'downvote') post.downvotes += 1;
     }
 
-    // Aggregate vote logic without touching userVote
-    if (voteType === 'upvote') {
-      if (post.upvotes > 0) {
-        post.upvotes -= 1; // Allow unvoting
-      } else if (post.downvotes > 0) {
-        post.downvotes -= 1; // Switch from downvote to upvote
-      }
-      post.upvotes += 1;
-    } else if (voteType === 'downvote') {
-      if (post.downvotes > 0) {
-        post.downvotes -= 1; // Allow unvoting
-      } else if (post.upvotes > 0) {
-        post.upvotes -= 1; // Switch from upvote to downvote
-      }
-      post.downvotes += 1;
+    // If user is changing their vote
+    else if (existingVote.voteType !== voteType) {
+      if (existingVote.voteType === 'upvote') post.upvotes -= 1;
+      else if (existingVote.voteType === 'downvote') post.downvotes -= 1;
+
+      if (voteType === 'upvote') post.upvotes += 1;
+      else if (voteType === 'downvote') post.downvotes += 1;
+
+      existingVote.voteType = voteType;
+      await existingVote.save();
     }
 
     await post.save();
 
-    // Return only the updated counts, ignoring userVote
-    res.status(200).json({ message: "Vote updated successfully", upvotes: post.upvotes, downvotes: post.downvotes });
+    res.status(200).json({
+      message: "Vote updated successfully",
+      upvotes: post.upvotes,
+      downvotes: post.downvotes,
+    });
+
   } catch (error) {
     console.error("Error voting on post:", error);
     res.status(500).json({ message: "Server error", error: error.message });

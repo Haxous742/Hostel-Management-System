@@ -26,11 +26,6 @@ const communityPostSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  userVote: {
-    type: String, // Can be 'upvote', 'downvote', or null
-    enum: ['upvote', 'downvote', null],
-    default: null,
-  },
   isAdminPost: {
     type: Boolean,
     default: false,
