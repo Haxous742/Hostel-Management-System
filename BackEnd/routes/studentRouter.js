@@ -573,6 +573,14 @@ studentRouter.get("/community-posts", async (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
 studentRouter.post("/community-posts/:id/vote", async (req, res) => {
   const cookie = req.cookies.jwt;
   const userData = await verifyCookie(cookie);
@@ -599,42 +607,36 @@ studentRouter.post("/community-posts/:id/vote", async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    // Simple vote logic for aggregate counts
+    // Aggregate vote logic without touching userVote
     if (voteType === 'upvote') {
-      if (post.upvotes > 0 && post.userVote === 'upvote') {
-        post.upvotes -= 1;
-        post.userVote = null;
-      } else {
-        if (post.userVote === 'downvote') {
-          post.downvotes -= 1;
-        }
-        post.upvotes += 1;
-        post.userVote = 'upvote';
+      if (post.upvotes > 0) {
+        post.upvotes -= 1; // Allow unvoting
+      } else if (post.downvotes > 0) {
+        post.downvotes -= 1; // Switch from downvote to upvote
       }
+      post.upvotes += 1;
     } else if (voteType === 'downvote') {
-      if (post.downvotes > 0 && post.userVote === 'downvote') {
-        post.downvotes -= 1;
-        post.userVote = null;
-      } else {
-        if (post.userVote === 'upvote') {
-          post.upvotes -= 1;
-        }
-        post.downvotes += 1;
-        post.userVote = 'downvote';
+      if (post.downvotes > 0) {
+        post.downvotes -= 1; // Allow unvoting
+      } else if (post.upvotes > 0) {
+        post.upvotes -= 1; // Switch from upvote to downvote
       }
+      post.downvotes += 1;
     }
 
     await post.save();
 
-    res.status(200).json({ message: "Vote updated successfully", post });
+    // Return only the updated counts, ignoring userVote
+    res.status(200).json({ message: "Vote updated successfully", upvotes: post.upvotes, downvotes: post.downvotes });
   } catch (error) {
     console.error("Error voting on post:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 
+// ... (rest of
+
+// your routes)
 
 
-  
-  
-  export default studentRouter;
+export default studentRouter;

@@ -3,7 +3,7 @@ import axios from 'axios';
 import Navbar from './Components/NavBar';
 import SideBar from './Components/SideBar';
 import { Link } from 'react-router-dom';
-import { storage } from './firebase'; // Adjust the import based on your firebase config file
+import { storage } from './firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const Community = () => {
@@ -28,7 +28,14 @@ const Community = () => {
       try {
         setLoadingPosts(true);
         const response = await axios.get('/api/student/community-posts', { withCredentials: true });
-        setPosts(response.data || []);
+        const postsData = response.data || [];
+        // Initialize with local userVote and backend counts
+        const updatedPosts = postsData.map(post => ({
+          ...post,
+          userVote: getUserVote(post._id) || null, // Local user-specific vote
+        }));
+        setPosts(updatedPosts);
+        console.log(updatedPosts)
       } catch (error) {
         console.error("Error fetching posts:", error);
         setPosts([]);
@@ -39,6 +46,22 @@ const Community = () => {
 
     fetchPosts();
   }, []);
+
+  // Helper functions to manage user votes in localStorage
+  const getUserVote = (postId) => {
+    const votes = JSON.parse(localStorage.getItem('userVotes') || '{}');
+    return votes[postId] || null;
+  };
+
+  const setUserVote = (postId, voteType) => {
+    const votes = JSON.parse(localStorage.getItem('userVotes') || '{}');
+    if (voteType === null) {
+      delete votes[postId];
+    } else {
+      votes[postId] = voteType;
+    }
+    localStorage.setItem('userVotes', JSON.stringify(votes));
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -86,7 +109,7 @@ const Community = () => {
         hashtags: hashtagArray,
         imageURL,
       }, {
-        withCredentials: true, // Send JWT cookie
+        withCredentials: true,
       });
 
       const newPostData = {
@@ -119,12 +142,35 @@ const Community = () => {
 
   const handleVote = async (postId, voteType) => {
     try {
+      const currentPost = posts.find(post => post._id === postId);
+      const currentVote = getUserVote(postId);
+
+      let newVote = null;
+      if (currentVote === voteType) {
+        // Unvote
+        newVote = null;
+      } else {
+        // Vote or switch vote
+        newVote = voteType;
+      }
+
+      // Update local user vote state immediately
+      setUserVote(postId, newVote);
+
+      // Send vote to backend to update counts
       const response = await axios.post(`/api/student/community-posts/${postId}/vote`, { voteType }, { withCredentials: true });
+      const { upvotes, downvotes } = response.data;
+
+      // Update posts state with new counts and local userVote
       setPosts(prevPosts =>
-        prevPosts.map(post => post._id === response.data.post._id ? response.data.post : post)
+        prevPosts.map(post =>
+          post._id === postId ? { ...post, upvotes, downvotes, userVote: newVote } : post
+        )
       );
     } catch (error) {
       console.error("Error voting on post:", error);
+      // Revert local vote if backend fails
+      setUserVote(postId, currentVote);
     }
   };
 
@@ -162,7 +208,7 @@ const Community = () => {
       timestamp: "2025-04-19T09:15:00Z",
       upvotes: 32,
       downvotes: 0,
-      userVote: 'upvote',
+      userVote: null,
       isAdminPost: false
     },
     {
