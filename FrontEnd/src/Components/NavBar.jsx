@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';  
+import { useNavigate } from 'react-router-dom';
 
   const Navbar = ({ onLogout }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarMenuOpen, setIsSidebarMenuOpen] = useState(false);  // New state for the sidebar menu
 
@@ -148,14 +150,16 @@ import { Navigate } from 'react-router-dom';
                     </li>
                     <li>
                       <a
-                        href="#"
+                        hhref="/"
                         onClick={async()=>{
+                          
                           const response = await fetch('/api/logout', {
                             method: 'POST',
                             credentials: 'include',
                           });
-                          const navigate = useNavigate();
-                          navigate('/');
+                          if(response.ok){
+                            navigate('/');}
+                          
                         }}
                         className="inline-block mx-4 mt-1 mb-2 px-4 py-1 text-sm text-white bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 rounded-lg transition-all duration-150 ease-in-out transform hover:scale-105"
                       >
