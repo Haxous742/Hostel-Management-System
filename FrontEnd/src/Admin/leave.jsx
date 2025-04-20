@@ -19,17 +19,37 @@ const A_Leave = () => {
     fetchLeaveData();
   }, []);
 
-  const handleDelete = (id) => async () => {
+  
+
+  const handleApprove = (id) => async () => {
     try {
-      const res = await axios.post(`/api/student/leave/delete`, { id });
+      const res = await axios.post(`/api/admin/leave/accept`, { id });
       if (res.status === 200) {
-        setLeaveList(leaveList.filter((item) => item._id !== id));
+        setLeaveList(leaveList.map((item) =>
+          item._id === id ? { ...item, status: 'Approved' } : item
+        ));
       } else {
-        alert('Failed to delete leave request.');
+        alert('Failed to approve leave request.');
       }
     } catch (err) {
-      console.error('Error deleting leave request:', err);
-      alert('Failed to delete leave request.');
+      console.error('Error approving leave request:', err);
+      alert('Failed to approve leave request.');
+    }
+  };
+
+  const handleReject = (id) => async () => {
+    try {
+      const res = await axios.post(`/api/admin/leave/reject`, { id });
+      if (res.status === 200) {
+        setLeaveList(leaveList.map((item) =>
+          item._id === id ? { ...item, status: 'Rejected' } : item
+        ));
+      } else {
+        alert('Failed to reject leave request.');
+      }
+    } catch (err) {
+      console.error('Error rejecting leave request:', err);
+      alert('Failed to reject leave request.');
     }
   };
 
@@ -54,7 +74,7 @@ const A_Leave = () => {
                     {leaveList.map((item, idx) => (
                       <div
                         key={idx}
-                        className="bg-gray-700 p-4 rounded-lg border border-gray-600 hover:bg-gray-600"
+                        className="bg-gray-800 p-4 rounded-lg border border-gray-600 hover:bg-gray-700"
                       >
                         <div className="flex justify-between mb-2">
                           <div className="flex items-center gap-2">
@@ -99,12 +119,26 @@ const A_Leave = () => {
                           >
                             {item.status}
                           </span>
-                          <button
-                            onClick={handleDelete(item._id)}
-                            className="bg-red-600 text-white px-3 py-1 text-xs rounded-lg hover:bg-red-700 transition-all"
-                          >
-                            Delete Request
-                          </button>
+
+                          {/* Conditionally render approve and reject buttons for 'Pending' requests */}
+                          {item.status === 'Pending' && (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={handleApprove(item._id)}
+                                className="bg-green-600 text-white px-3 py-1 text-xs rounded-lg hover:bg-green-700 transition-all"
+                              >
+                                Approve
+                              </button>
+                              <button
+                                onClick={handleReject(item._id)}
+                                className="bg-red-600 text-white px-3 py-1 text-xs rounded-lg hover:bg-red-700 transition-all"
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          )}
+
+                     
                         </div>
                       </div>
                     ))}

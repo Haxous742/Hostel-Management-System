@@ -7,6 +7,8 @@ import bodyParser from 'body-parser';
 import apiRouter from './routes/apiRouter.js';
 import sendMail from './service/email.js';
 
+import Menu from './model/menu_model.js';
+
 dotenv.config();
 
 
@@ -17,11 +19,22 @@ const app = express();
 
 const mongoURI = process.env.MONGODB_URI;
 
+
+
+
+
+
+
 mongoose.connect(mongoURI, {
     tls: true, 
     tlsAllowInvalidCertificates: true, 
-  }).then(() => {
+  }).then(async() => {
     console.log('Connected to MongoDB');
+    
+
+
+
+
   }).catch((error) => {
     console.error('MongoDB connection error:', error.message);
   });
@@ -47,6 +60,14 @@ app.use(cookieParser());
 
 //Setting up the routes
 app.use('/api', apiRouter);
+
+
+
+
+
+
+
+
 
 
 

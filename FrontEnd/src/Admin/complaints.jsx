@@ -9,30 +9,25 @@ const A_Complaints = () => {
 
   useEffect(() => {
     axios
-      .get('/api/student/complaints/show')
+      .get('/api/admin/complaints')
       .then((res) => setComplaintsList(res.data))
       .catch((err) => console.error('Error fetching complaints:', err));
   }, []);
 
-  const handleStatusUpdate = async (complaintId, newStatus) => {
+  const handleStatusUpdate = async (complaintId, status) => {
+    const endpoint = status === 'Discarded' ? '/api/admin/complaints/discard' : '/api/admin/complaints/completed';
     try {
-      await axios.post(
-        '/api/student/complaints/update-status',
-        { complaintId, status: newStatus },
-        { withCredentials: true }
-      );
+      await axios.post(endpoint, { complaintId });
       
       // Update the local state to reflect the new status
       setComplaintsList(
-        complaintsList.map((complaint) => 
-          complaint._id === complaintId 
-            ? { ...complaint, status: newStatus } 
-            : complaint
+        complaintsList.map((complaint) =>
+          complaint._id === complaintId ? { ...complaint, status } : complaint
         )
       );
     } catch (err) {
-      console.error(`Error updating complaint status to ${newStatus}:`, err);
-      alert(`Failed to update complaint status to ${newStatus}.`);
+      console.error(`Error updating complaint status to ${status}:`, err);
+      alert(`Failed to update complaint status to ${status}.`);
     }
   };
 
@@ -41,7 +36,7 @@ const A_Complaints = () => {
   };
 
   const handleApprove = (complaintId) => {
-    handleStatusUpdate(complaintId, 'Approved');
+    handleStatusUpdate(complaintId, 'Completed');
   };
 
   const handleLogout = () => console.log('Logged out');
@@ -72,21 +67,14 @@ const A_Complaints = () => {
             
             {/* Container with gradient border */}
             <div
-              className="
-                p-[1px]
-                rounded-2xl
-                overflow-hidden
-                bg-gradient-to-r from-amber-500 to-red-600
-              "
+              className="p-[1px] rounded-2xl overflow-hidden bg-gradient-to-r from-amber-500 to-red-600"
             >
               <div className="bg-gray-800 rounded-2xl shadow-xl p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-semibold text-white">
-                    All Student Complaints
-                  </h2>
+                  <h2 className="text-2xl font-semibold text-white">All Student Complaints</h2>
                   <div className="flex space-x-2">
                     <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">Pending</span>
-                    <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Approved</span>
+                    <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">Completed</span>
                     <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full">Discarded</span>
                   </div>
                 </div>
@@ -95,13 +83,11 @@ const A_Complaints = () => {
                 <div className="h-96 overflow-y-auto pr-2 custom-scrollbar">
                   <div className="space-y-3">
                     {complaintsList.length === 0 ? (
-                      <p className="text-gray-400 text-center italic w-full">
-                        No complaints filed yet.
-                      </p>
+                      <p className="text-gray-400 text-center italic w-full">No complaints filed yet.</p>
                     ) : (
                       complaintsList.map((item) => (
                         <div
-                          key={item.id || item._id}
+                          key={item._id}
                           className="p-4 bg-gray-700 rounded-lg border border-gray-600 hover:bg-gray-650 transition-colors"
                         >
                           <div className="flex items-center justify-between mb-2">
@@ -109,16 +95,20 @@ const A_Complaints = () => {
                               <span
                                 className={`w-3 h-3 rounded-full ${getCategoryColor(item.category)}`}
                               />
-                              <span className="font-medium text-gray-200">
-                                {item.category}
-                              </span>
+                              <span className="font-medium text-gray-200">{item.category}</span>
                             </div>
                             <span className="text-sm text-gray-400">{item.date}</span>
                           </div>
                           
-                          <p className="text-gray-300 mb-3">
-                            {item.text}
-                          </p>
+                          <p className="text-gray-300 mb-3">{item.text}</p>
+
+                          {/* Displaying User Details */}
+                          <div className="mb-3 text-sm text-gray-400">
+                            <p><strong>Email:</strong> {item.user.email}</p>
+                            <p><strong>Name:</strong> {item.user.name}</p>
+                            <p><strong>Phone :</strong> {item.user.phone}</p>
+                            <p><strong>Room Number :</strong> {item.user.roomNumber}</p>
+                          </div>
 
                           <div className="border-t border-gray-600 pt-3 mt-2">
                             <div className="flex justify-between items-center">
@@ -126,7 +116,7 @@ const A_Complaints = () => {
                                 className={`inline-block px-2.5 py-1 text-xs font-semibold rounded-full ${
                                   item.status === 'Pending'
                                     ? 'bg-yellow-100 text-yellow-800'
-                                    : item.status === 'Approved'
+                                    : item.status === 'Completed'
                                     ? 'bg-green-100 text-green-800'
                                     : 'bg-red-100 text-red-800'
                                 }`}
@@ -139,7 +129,7 @@ const A_Complaints = () => {
                                   disabled={item.status !== 'Pending'}
                                   className="bg-green-600 text-white px-3 py-1 text-xs rounded-lg hover:bg-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                  Approve
+                                  Completed
                                 </button>
                                 <button
                                   onClick={() => handleDiscard(item._id)}
