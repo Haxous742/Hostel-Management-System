@@ -2,6 +2,8 @@ import { Router } from "express";
 import user from "../model/users_model.js";
 import Complaint from "../model/complaints_model.js";
 import { verifyCookie } from "../service/auth.js";
+import LeaveRequest from "../model/leave_model.js";
+import TempLeaveRequest from "../model/tempLeave_model.js";
 import Rating from "../model/rating_model.js";
 import Menu from "../model/menu_model.js";
 const studentRouter = Router();
@@ -272,11 +274,101 @@ studentRouter.post("/menu/rate", async (req, res) => {
   
   
   
-  
-  
-  
-  
-  
+
+studentRouter.get('/leave/show', async (req, res) => {
+  const cookie = req.cookies.jwt;
+  const userData = await verifyCookie(cookie);
+
+  if (!userData) return res.status(401).json({ message: "Unauthorized" });
+
+  try {
+    const student = await user.findOne({ email: userData.email });
+    if (!student) return res.status(404).json({ message: "User not found" });
+
+    const leaveRequests = await LeaveRequest.find({ userId: student._id }).sort({ startDate: -1 });
+
+    res.status(200).json(leaveRequests);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
+
+studentRouter.post('/leave/new', async (req, res) => {
+  const cookie = req.cookies.jwt;
+  const { leaveType,reason, startDate, endDate } = req.body;
+
+  try {
+    const userData = await verifyCookie(cookie);
+    const student = await user.findOne({ email: userData.email });
+
+    if (!student) return res.status(401).json({ message: "User not found" });
+
+    const newTempLeave = new TempLeaveRequest({
+      userId: student._id,
+      reason,
+      startDate,
+      endDate,
+      leaveType,
+      otp: Math.floor(100000 + Math.random() * 900000),
+    });
+
+    await newTempLeave.save();
+    res.status(200).json({ message: "OTP sent. Please verify to confirm leave.", leaveId: newTempLeave._id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
+
+studentRouter.post('/leave/verify', async (req, res) => {
+  const cookie = req.cookies.jwt;
+  const { otp, leaveId } = req.body;
+
+  try {
+    const userData = await verifyCookie(cookie);
+    const student = await user.findOne({ email: userData.email });
+
+    if (!student) return res.status(401).json({ message: "User not found" });
+
+    const tempLeave = await TempLeaveRequest.findOne({ _id: leaveId, userId: student._id });
+
+    if (!tempLeave) return res.status(404).json({ message: "Leave request not found or expired" });
+
+    if (parseInt(otp) === tempLeave.otp) {
+      const newLeave = new LeaveRequest({
+        userId: tempLeave.userId,
+        reason: tempLeave.reason,
+        startDate: tempLeave.startDate,
+        endDate: tempLeave.endDate,
+      });
+
+      await newLeave.save();
+      await TempLeaveRequest.deleteOne({ _id: leaveId });
+
+      res.status(200).json({ message: "Leave verified and approved" });
+    } else {
+      res.status(401).json({ message: "Invalid OTP" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
+
+
+
+
+
+
   
   
   export default studentRouter;
