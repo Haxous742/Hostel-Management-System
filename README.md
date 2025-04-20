@@ -1,90 +1,136 @@
-# Hostel Management System
+# 🏨 Hostel Management System – IIIT Bangalore
 
-The Hostel Management System for IIIT-Bangalore (IIITB) is a dedicated software application developed to simplify and enhance the management of hostel facilities within the institute. As IIITB accommodates a large number of residential students, efficient handling of room allocation, student records, fee tracking, and grievance redressal becomes essential. This system is designed to digitize and streamline these processes, replacing traditional manual methods that are often time-consuming and error-prone.
+A full-stack application built to digitize and streamline hostel operations at **IIIT Bangalore**. This system simplifies complaint registration, leave management, mess feedback, and more — all on a centralized platform for both students and administrators.
 
-By providing a centralized platform for both students and hostel administrators, the system ensures transparency, improves communication, and enables quick decision-making. It supports key functionalities such as room assignment, attendance monitoring, leave applications, and complaint registration. Overall, the Hostel Management System contributes to a smoother and more organized residential experience for students at IIITB.
+[![GitHub Repo](https://img.shields.io/badge/Visit%20Repo-%2312100E.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Haxous742/Hostel-Management-System.git)
 
-## Features
+---
 
-The Hostel Management System for IIITB is equipped with a range of features designed to simplify and automate hostel operations.
-   
-   1. Dashboard - The dashboard displays the three most recent community posts, the daily mess menu, the upcoming meal time, and highlights any student birthdays for the day.
+## 📌 Table of Contents
 
-   2. Community Posts - These features enable both students and administrators to share important updates, such as event announcements, maintenance notifications, and other timely information within the hostel community.
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Installation Guide](#-installation-guide)
+- [Usage](#-usage)
+- [Implementation Overview](#-implementation-overview)
 
-   3. Mess IIITB - It displays the daily mess menu and also provides a platform for students to rate the food served, helping maintain quality and gather feedback.
+---
 
-   4. Complaints - A dedicated portal that allows students to file complaints related to the mess, hostel rooms, MPH, gym, or any other hostel facilities, ensuring their concerns are addressed efficiently.
+## ✨ Features
 
-   5. Leave application - The system includes a leave application portal where students can apply for hostel leave by specifying the type of leave (e.g., medical, personal), along with the date and time of departure and return. Students must also provide a reason for the leave and submit the application. An OTP is then sent to their registered parent email ID, which must be entered to verify consent. Only after successful OTP verification is the leave request forwarded to the admin for further processing.
+### 🧑‍🏫 For Students:
+- **Dashboard**: View recent community posts, daily mess menu, upcoming meal, and student birthdays.
+- **Community Posts**: Share or view updates, events, and hostel notices.
+- **Mess IIITB**: View daily menu and rate food quality.
+- **Complaints**: File complaints for mess, rooms, gym, MPH, etc.
+- **Leave Application**: Apply for leave with OTP verification sent to registered parent email.
+- **Profile**: View and update personal details including profile picture.
 
-   6. Profile - This section displays the student’s personal information and provides an option to update the profile photo.
+### 🧑‍💼 For Admins:
+- Access and manage student complaints and leave applications.
 
-   7. The admin has a separate page where they can access student complaints and leave applications, allowing them to take the necessary actions.
+---
 
-## Installation Guide
+## 🛠 Tech Stack
 
-Clone and Run React App with Vite, Flowbite, Tailwind, and MongoDB
-This guide provides steps to clone an existing repository and set up the environment to run a full-stack application with a React frontend (using Vite, Flowbite React, Tailwind CSS) and a Node.js/Express backend connected to MongoDB.
-Prerequisites
+- **Frontend**: React (Vite), Tailwind CSS, Flowbite React  
+- **Backend**: Node.js, Express.js  
+- **Database**: MongoDB (Atlas)  
+- **Authentication**: JWT tokens, nodemailer  
 
-Node.js (v18 or higher)
-npm (v9 or higher)
-MongoDB (local installation or MongoDB Atlas account)
-Git
+---
 
-Setup Instructions
-1. Clone the Repository
-Clone the repository to your local machine:
-git clone <repo-url>
-cd <name of the cloned repo>
+## ⚙️ Installation Guide
 
-2. Set Up the Frontend
-Navigate to the frontend directory and install dependencies:
-cd client
-npm install
+### Prerequisites
 
-3. Set Up the Backend
-Navigate to the backend directory and install dependencies:
-cd ../server
-npm install
+- Node.js (v18 or higher)  
+- npm (v9 or higher)  
+- Git  
+- MongoDB (local or MongoDB Atlas)  
 
-4. Configure MongoDB
+### Steps
 
-Local MongoDB: Ensure MongoDB is running locally (mongod).
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/Haxous742/Hostel-Management-System.git
+   cd Hostel-Management-System
+   ```
 
-MongoDB Atlas: Create a cluster, get the connection string, and add it to server/.env. Create or update server/.env:
-MONGO_URI=<your-mongodb-connection-string>
-PORT=5000
+2. **Set Up Frontend**:
+   ```bash
+   cd client
+   npm install
+   ```
 
+3. **Set Up Backend**:
+   ```bash
+   cd ../server
+   npm install
+   ```
 
+5. **Run the Application**:
 
-5. Run the Application
-Open two terminal windows:
+   For the simplicity of the installations, we have given out our API keys in the `./env` file. We understand that this is not a good practice.
 
-Frontend:
-cd client
-npm run dev
+   - In one terminal, run frontend:
+     ```bash
+     cd client
+     npm run dev
+     ```
+     Visit: [http://localhost:5173](http://localhost:5173)
 
-Open http://localhost:5173 in your browser.
+   - In another terminal, run backend:
+     ```bash
+     cd server
+     node index.js
+     ```
+     API: [http://localhost:5000](http://localhost:5000)
 
-Backend:
-cd server
-node index.js
+---
 
-API will be available at http://localhost:5000.
+## ⚖️ Implementation Overview
 
+This project has been structured with modularity, clarity, and scalability in mind.
 
-6. Additional Notes
+### 🚀 Frontend (React + Tailwind + Flowbite)
 
-Ensure CORS is properly configured if the frontend and backend are on different ports.
-Use axios in the frontend to make API calls to the backend (e.g., http://localhost:5000/api/users).
-For production, build the frontend (npm run build in client) and serve it using Express.
+- **Folder Structure**: Pages are componentized by feature (e.g., Dashboard, LeaveForm, Complaints, Profile).
+- **Routing**: React Router DOM is used to manage navigation between pages, with protected routes for authentication.
+- **Community Feed**: Uses context API for shared state of posts and real-time display of top 3 in dashboard.
+- **Mess Rating**: Users can give feedback through star ratings; data is synced to the backend.
+- **Forms**: Complaint and Leave forms include field validation, dynamic dropdowns, and submit state UX improvements.
 
-## Links
+### 🧰 Backend (Node.js + Express)
 
-Github - https://github.com/Haxous742/Hostel-Management-System.git
+- **Authentication**:
+  - JWT tokens are used for secure authentication.
+  - Middleware checks for user roles (admin/student) to manage access control.
+- **OTP System**:
+  - `nodemailer` is integrated to send OTPs to parent email IDs during leave applications.
+  - OTPs are hashed and time-limited to enhance security.
+- **Leave System**:
+  - Two MongoDB collections handle temporary (unverified) and verified leaves.
+  - Once OTP is confirmed, the leave is moved to a permanent schema.
+- **Complaint Management**:
+  - Complaints are stored in MongoDB with `status`, `type`, and `studentId`.
+  - Admin routes allow toggling complaint resolution status.
 
-Video Link - 
+### 📃 Database (MongoDB)
 
-Host Link - 
+- **Mongoose Models**:
+  - `User`: student data and profile info
+  - `Complaint`: detailed structure including type, message, resolution status
+  - `LeaveRequest`: structure for both temporary and permanent leaves
+  - `CommunityPost`: includes hashtags, image URL, and author
+
+### ⚖️ Admin Panel
+
+- Admin can see lists of all active complaints and pending leave applications.
+- One-click approval or rejection of leaves.
+- Option to delete community posts and flag user reports.
+
+---
+
+This implementation demonstrates clean RESTful design, proper schema validation, and a user-friendly interface for both students and admins.
+
