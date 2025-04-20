@@ -327,16 +327,49 @@ studentRouter.post('/leave/new', async (req, res) => {
     //send mail
 
     const subject = "Leave Request OTP";
-    const body = `Dear Parent/Guardian,\n\n` +
-      `I hope this email finds you well. This is an automated email generated to request your permission for ${student.name} to take leave as per the details mentioned below:\n\n` +
-      `Student Information:\n` +
-      `Name: ${student.name}\n` +
-      `Batch: ${student.batch}\n` +
-      `Leave Duration: From ${startDate} to ${endDate}\n` +
-      `Reason for Leave: ${reason}\n\n` +
-      `To proceed with the leave request, please confirm your approval by sharing the following OTP only with your ward if you allow this leave: ${newTempLeave.otp}.\n\n` +
-      `If you do not approve this request, kindly disregard this email. Should you have any concerns or require further information, feel free to reach out.\n\n` +
-      `We appreciate your cooperation.`;
+    const body = ` <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; padding: 20px;">
+      <h2 style="color: #2c3e50;">Hostel Leave Request</h2>
+      <p>Dear Parent/Guardian,</p>
+      <p>
+        I hope this email finds you well. This is an automated message requesting your permission for 
+        <strong>${student.name}</strong> to take leave as per the details below:
+      </p>
+
+      <h3 style="color: #0056b3;">Student Information:</h3>
+      <table style="border-collapse: collapse; width: 100%;">
+        <tr>
+          <td style="padding: 8px;"><strong>Name:</strong></td>
+          <td style="padding: 8px;">${student.name}</td>
+        </tr>
+        <tr style="background-color: #f8f9fa;">
+          <td style="padding: 8px;"><strong>Batch:</strong></td>
+          <td style="padding: 8px;">${student.batch}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px;"><strong>Leave Duration:</strong></td>
+          <td style="padding: 8px;">From ${startDate} to ${endDate}</td>
+        </tr>
+        <tr style="background-color: #f8f9fa;">
+          <td style="padding: 8px;"><strong>Reason:</strong></td>
+          <td style="padding: 8px;">${reason}</td>
+        </tr>
+      </table>
+
+      <p>
+        To proceed with the leave request, please confirm your approval by sharing the following OTP only with your ward:
+        <br />
+        <span style="font-size: 24px; font-weight: bold; color: #d9534f;">${ newTempLeave.otp }</span>
+      </p>
+
+      <p>If you do not approve this request, kindly disregard this email.</p>
+
+      <p>Should you have any concerns or require further information, feel free to reach out.</p>
+
+      <p>We appreciate your cooperation.</p>
+
+      <br />
+      <p>Warm regards,<br /><em>Hostel Management System</em></p>
+    </div>.`;
 
     await sendMail(student.parentEmail,subject,body);
 

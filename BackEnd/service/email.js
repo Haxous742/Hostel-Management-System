@@ -19,7 +19,7 @@ async function sendMail(recipentEmail,subject,body) {
             address:"hostelmanagementsystem.noreply@gmail.com"},
         to: recipentEmail, 
         subject: subject,
-        text: body
+        html: body
     };
 
     try {
