@@ -94,7 +94,7 @@ const Community = () => {
         .filter(tag => tag.length > 0)
         .map(tag => tag.startsWith('#') ? tag : `#${tag}`);
 
-      const isAdminPost = hashtagArray.some(tag => tag.toLowerCase() === '#admin');
+      const isAdminPost = hashtagArray.some(tag => tag.toLowerCase() === '#announcement');
 
       let imageURL = null;
       if (selectedImage) {
@@ -180,51 +180,6 @@ const Community = () => {
       post.hashtags.some(tag => tag.toLowerCase().includes(filter.toLowerCase()))
     );
   };
-
-  const mockPosts = [
-    {
-      _id: 1,
-      content: "Anyone interested in forming a study group for the upcoming exams?",
-      hashtags: ["#Academic", "#StudyGroup"],
-      author: {
-        name: "Sarah Johnson",
-        avatarURL: "../public/img/default-avatar.png"
-      },
-      timestamp: "2025-04-19T14:30:00Z",
-      upvotes: 15,
-      downvotes: 2,
-      userVote: null,
-      isAdminPost: false
-    },
-    {
-      _id: 2,
-      content: "Movie night this Saturday in the common room! Bring snacks and good vibes.",
-      hashtags: ["#Event", "#Social", "#MovieNight"],
-      author: {
-        name: "Michael Chen",
-        avatarURL: "../public/img/default-avatar.png"
-      },
-      timestamp: "2025-04-19T09:15:00Z",
-      upvotes: 32,
-      downvotes: 0,
-      userVote: null,
-      isAdminPost: false
-    },
-    {
-      _id: 3,
-      content: "IMPORTANT: Maintenance work will be carried out in Block C this weekend. Please plan accordingly.",
-      hashtags: ["#Announcement", "#Admin", "#Hostel"],
-      author: {
-        name: "Admin User",
-        avatarURL: "../public/img/default-avatar.png"
-      },
-      timestamp: "2025-04-18T18:45:00Z",
-      upvotes: 45,
-      downvotes: 0,
-      userVote: null,
-      isAdminPost: true
-    }
-  ];
 
   const adminGradient = "from-amber-500 to-red-600";
 
@@ -321,7 +276,7 @@ const Community = () => {
                             <span 
                               key={i} 
                               className={`text-xs px-2 py-1 rounded-full ${
-                                tag.toLowerCase() === '#admin' 
+                                tag.toLowerCase() === '#announcement' 
                                   ? `bg-gradient-to-r ${adminGradient} text-white font-medium` 
                                   : 'bg-gray-700 text-blue-400'
                               }`}
@@ -487,7 +442,7 @@ const Community = () => {
                         key={tag}
                         type="button"
                         className={`text-xs ${
-                          tag === 'Admin' 
+                          tag === 'Announcement' 
                             ? `bg-gradient-to-r ${adminGradient}` 
                             : 'bg-gray-700 hover:bg-gray-600'
                         } text-white px-2 py-1 rounded-full transition-colors`}

@@ -30,7 +30,6 @@ const Dashboard = () => {
       });
   }, [navigate]);
 
-  // Fetch community posts with Admin or Event tags
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -38,7 +37,6 @@ const Dashboard = () => {
         const response = await axios.get('/api/student/community-posts');
         const posts = response.data || mockPosts;
         
-        // Filter posts that have #Admin or #Event tags
         const filteredPosts = posts.filter(post => 
           post.hashtags.some(tag => 
             tag.toLowerCase() === '#admin' || 
@@ -131,20 +129,7 @@ const Dashboard = () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
   
-  // Fetch today's birthdays
   useEffect(() => {
     const fetchBirthdays = async () => {
       try {
@@ -177,13 +162,11 @@ const Dashboard = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Function to determine next meal based on current time
   const getNextMeal = () => {
     const hours = currentTime.getHours();
     const minutes = currentTime.getMinutes();
     const currentTimeValue = hours * 60 + minutes;
 
-    // Convert meal times to minutes for comparison
     const mealTimes = [
       { name: 'breakfast', start: getTimeInMinutes(meals.breakfast?.time?.start || '07:30'), end: getTimeInMinutes(meals.breakfast?.time?.end || '09:45') },
       { name: 'lunch', start: getTimeInMinutes(meals.lunch?.time?.start || '12:30'), end: getTimeInMinutes(meals.lunch?.time?.end || '14:00') },
@@ -191,24 +174,20 @@ const Dashboard = () => {
       { name: 'dinner', start: getTimeInMinutes(meals.dinner?.time?.start || '19:30'), end: getTimeInMinutes(meals.dinner?.time?.end || '21:00') }
     ];
 
-    // Find the next upcoming meal
     for (const meal of mealTimes) {
       if (currentTimeValue < meal.end) {
         return meal.name;
       }
     }
 
-    // If all meals are past, return breakfast for tomorrow
     return 'breakfast';
   };
 
-  // Convert time string (HH:MM) to minutes since midnight
   const getTimeInMinutes = (timeString) => {
     const [hours, minutes] = timeString.split(':').map(Number);
     return hours * 60 + minutes;
   };
 
-  // Set active meal tab on component mount
   useEffect(() => {
     const nextMeal = getNextMeal();
     setActiveMealTab(nextMeal);
@@ -224,82 +203,10 @@ const Dashboard = () => {
       });
   };
 
-  // Mock data
-  const mockPosts = [
-    {
-      id: 1,
-      content: "IMPORTANT: Maintenance work will be carried out in Block C this weekend. Please plan accordingly.",
-      hashtags: ["#Announcement", "#Admin", "#Hostel"],
-      author: {
-        name: "Admin User",
-        avatarURL: "../public/img/default-avatar.png"
-      },
-      timestamp: "2025-04-18T18:45:00Z",
-      upvotes: 45,
-      downvotes: 0,
-      userVote: null,
-      isAdminPost: true
-    },
-    {
-      id: 2,
-      content: "Movie night this Saturday in the common room! Bring snacks and good vibes.",
-      hashtags: ["#Event", "#Social", "#MovieNight"],
-      author: {
-        name: "Events Committee",
-        avatarURL: "../public/img/default-avatar.png"
-      },
-      timestamp: "2025-04-19T09:15:00Z",
-      upvotes: 32,
-      downvotes: 0,
-      userVote: 'upvote',
-      isAdminPost: false
-    },
-    {
-      id: 3,
-      content: "The gym will be closed for renovations from April 25th to April 28th. We apologize for the inconvenience.",
-      hashtags: ["#Announcement", "#Admin", "#Facilities"],
-      author: {
-        name: "Admin User",
-        avatarURL: "../public/img/default-avatar.png"
-      },
-      timestamp: "2025-04-18T10:20:00Z",
-      upvotes: 12,
-      downvotes: 3,
-      userVote: null,
-      isAdminPost: true
-    }
-  ];
 
- 
-  const mockBirthdays = [
-    {
-      id: 1,
-      name: "Rahul Sharma",
-      avatarURL: "../public/img/default-avatar.png",
-      department: "Computer Science",
-      year: 2
-    },
-    {
-      id: 2,
-      name: "Priya Patel",
-      avatarURL: "../public/img/default-avatar.png",
-      department: "Electrical Engineering",
-      year: 3
-    },
-    {
-      id: 3,
-      name: "Arjun Singh",
-      avatarURL: "../public/img/default-avatar.png",
-      department: "Mechanical Engineering",
-      year: 4
-    }
-  ];
-
-  // Admin post gradient
   const adminGradient = "from-amber-500 to-red-600";
   const eventGradient = "from-blue-500 to-purple-600";
 
-  // Format time string (convert 24h to 12h format)
   const formatTime = (timeString) => {
     const [hours, minutes] = timeString.split(':');
     const hour = parseInt(hours, 10);
@@ -308,7 +215,6 @@ const Dashboard = () => {
     return `${displayHour}:${minutes} ${suffix}`;
   };
 
-  // Get the current meal period
   const nextMeal = getNextMeal();
 
   return (
@@ -342,7 +248,7 @@ const Dashboard = () => {
                   <div className="space-y-4 max-h-[800px] overflow-y-auto pr-2">
                     {adminAndEventPosts.map((post, index) => {
                       // Determine if the post is admin or event based on hashtags
-                      const isAdminPost = post.hashtags.some(tag => tag.toLowerCase() === '#admin');
+                      const isAdminPost = post.hashtags.some(tag => tag.toLowerCase() === '#announcement');
                       const isEventPost = post.hashtags.some(tag => tag.toLowerCase() === '#event');
                       
                       // Set the appropriate gradient based on post type
