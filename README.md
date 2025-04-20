@@ -1,90 +1,111 @@
-# Hostel Management System
+# 🏨 Hostel Management System – IIIT Bangalore
 
-The Hostel Management System for IIIT-Bangalore (IIITB) is a dedicated software application developed to simplify and enhance the management of hostel facilities within the institute. As IIITB accommodates a large number of residential students, efficient handling of room allocation, student records, fee tracking, and grievance redressal becomes essential. This system is designed to digitize and streamline these processes, replacing traditional manual methods that are often time-consuming and error-prone.
+A full-stack application built to digitize and streamline hostel operations at **IIIT Bangalore**. This system simplifies complaint registration, leave management, mess feedback, and more — all on a centralized platform for both students and administrators.
 
-By providing a centralized platform for both students and hostel administrators, the system ensures transparency, improves communication, and enables quick decision-making. It supports key functionalities such as room assignment, attendance monitoring, leave applications, and complaint registration. Overall, the Hostel Management System contributes to a smoother and more organized residential experience for students at IIITB.
+[![GitHub Repo](https://img.shields.io/badge/Visit%20Repo-%2312100E.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Haxous742/Hostel-Management-System.git)
 
-## Features
+---
 
-The Hostel Management System for IIITB is equipped with a range of features designed to simplify and automate hostel operations.
-   
-   1. Dashboard - The dashboard displays the three most recent community posts, the daily mess menu, the upcoming meal time, and highlights any student birthdays for the day.
+## 📌 Table of Contents
 
-   2. Community Posts - These features enable both students and administrators to share important updates, such as event announcements, maintenance notifications, and other timely information within the hostel community.
-
-   3. Mess IIITB - It displays the daily mess menu and also provides a platform for students to rate the food served, helping maintain quality and gather feedback.
-
-   4. Complaints - A dedicated portal that allows students to file complaints related to the mess, hostel rooms, MPH, gym, or any other hostel facilities, ensuring their concerns are addressed efficiently.
-
-   5. Leave application - The system includes a leave application portal where students can apply for hostel leave by specifying the type of leave (e.g., medical, personal), along with the date and time of departure and return. Students must also provide a reason for the leave and submit the application. An OTP is then sent to their registered parent email ID, which must be entered to verify consent. Only after successful OTP verification is the leave request forwarded to the admin for further processing.
-
-   6. Profile - This section displays the student’s personal information and provides an option to update the profile photo.
-
-   7. The admin has a separate page where they can access student complaints and leave applications, allowing them to take the necessary actions.
-
-## Installation Guide
-
-Clone and Run React App with Vite, Flowbite, Tailwind, and MongoDB
-This guide provides steps to clone an existing repository and set up the environment to run a full-stack application with a React frontend (using Vite, Flowbite React, Tailwind CSS) and a Node.js/Express backend connected to MongoDB.
-Prerequisites
-
-Node.js (v18 or higher)
-npm (v9 or higher)
-MongoDB (local installation or MongoDB Atlas account)
-Git
-
-Setup Instructions
-1. Clone the Repository
-Clone the repository to your local machine:
-git clone <repo-url>
-cd <name of the cloned repo>
-
-2. Set Up the Frontend
-Navigate to the frontend directory and install dependencies:
-cd client
-npm install
-
-3. Set Up the Backend
-Navigate to the backend directory and install dependencies:
-cd ../server
-npm install
-
-4. Configure MongoDB
-
-Local MongoDB: Ensure MongoDB is running locally (mongod).
-
-MongoDB Atlas: Create a cluster, get the connection string, and add it to server/.env. Create or update server/.env:
-MONGO_URI=<your-mongodb-connection-string>
-PORT=5000
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Installation Guide](#-installation-guide)
+- [Usage](#-usage)
 
 
+---
 
-5. Run the Application
-Open two terminal windows:
+## ✨ Features
 
-Frontend:
-cd client
-npm run dev
+### 🧑‍🏫 For Students:
+- **Dashboard**: View recent community posts, daily mess menu, upcoming meal, and student birthdays.
+- **Community Posts**: Share or view updates, events, and hostel notices.
+- **Mess IIITB**: View daily menu and rate food quality.
+- **Complaints**: File complaints for mess, rooms, gym, MPH, etc.
+- **Leave Application**: Apply for leave with OTP verification sent to registered parent email.
+- **Profile**: View and update personal details including profile picture.
 
-Open http://localhost:5173 in your browser.
+### 🧑‍💼 For Admins:
+- Access and manage student complaints and leave applications.
 
-Backend:
-cd server
-node index.js
+---
 
-API will be available at http://localhost:5000.
+## 🛠 Tech Stack
+
+- **Frontend**: React (Vite), Tailwind CSS, Flowbite React  
+- **Backend**: Node.js, Express.js  
+- **Database**: MongoDB ( Atlas)  
+- **Authentication**: JWT tokens , nodemailer.
+
+---
+
+## ⚙️ Installation Guide
+
+### Prerequisites
+
+- Node.js (v18 or higher)  
+- npm (v9 or higher)  
+- Git  
+- MongoDB (local or MongoDB Atlas)  
+
+### Steps
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/Haxous742/Hostel-Management-System.git
+   cd Hostel-Management-System
+   ```
+
+2. **Set Up Frontend**:
+   ```bash
+   cd client
+   npm install
+   ```
+
+3. **Set Up Backend**:
+   ```bash
+   cd ../server
+   npm install
+   ```
 
 
-6. Additional Notes
 
-Ensure CORS is properly configured if the frontend and backend are on different ports.
-Use axios in the frontend to make API calls to the backend (e.g., http://localhost:5000/api/users).
-For production, build the frontend (npm run build in client) and serve it using Express.
+5. **Run the Application**:
 
-## Links
+   For the simplicity of the installations , we have given out our api keys in the "./env" file , We understnad that this is not a good practice.
 
-Github - https://github.com/Haxous742/Hostel-Management-System.git
+   - In one terminal, run frontend:
+     ```bash
+     cd client
+     npm run dev
+     ```
+     Visit: [http://localhost:5173](http://localhost:5173)
 
-Video Link - 
+   - In another terminal, run backend:
+     ```bash
+     cd server
+     node index.js
+     ```
+     API: [http://localhost:5000](http://localhost:5000)
 
-Host Link - 
+---
+
+## ▶️ Usage
+
+- Make sure CORS is enabled if frontend and backend run on different ports.
+- Use `axios` for frontend API calls.
+- For production, build frontend using `npm run build` and serve via Express.
+
+---
+
+## 👥 Contributors
+
+- [@Haxous742](https://github.com/Haxous742)
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
