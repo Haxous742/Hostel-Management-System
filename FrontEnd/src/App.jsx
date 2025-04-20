@@ -13,6 +13,8 @@ import Profile from './Profile';
 import ProtectedRoute from './ProtectedRoute'; 
 import YourPosts from './yourposts';
 
+import PublicProfile from './PublicProfile';
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -30,6 +32,9 @@ const App = () => {
         <Route path="/dashboard/Profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/dashboard/Leave" element={<ProtectedRoute><Leave /></ProtectedRoute>} />
         <Route path="/dashboard/Leave/Cab-Sharing" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+
+
+        <Route path="/user/:userId" element={<ProtectedRoute><PublicProfile/></ProtectedRoute>} />
 
         <Route path="*" element={<NotFound />} />
 

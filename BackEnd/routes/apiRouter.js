@@ -117,6 +117,57 @@ apiRouter.post('/logout', (req, res) => {
 //==============================================================================================
 //==============================================================================================
 
+
+
+
+
+// GET /api/users
+apiRouter.get('/users', async (req, res) => {
+    try {
+      const users = await user_model.find({}, 'name email avatarURL'); // only return necessary fields
+      res.json(users);
+    } catch (err) {
+      res.status(500).json({ message: 'Server error' });
+    }
+  });
+  
+
+
+
+
+
+
+
+  apiRouter.get("/user/:id", async (req, res) => {
+    try {
+      const student = await user_model.findById(req.params.id)
+      res.json({ student });
+    } catch (err) {
+      res.status(500).json({ error: "Something went wrong" });
+    }
+  });
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import studentRouter from "./studentRouter.js";
 
 apiRouter.use("/student", studentRouter);
