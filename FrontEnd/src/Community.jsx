@@ -27,11 +27,11 @@ const Community = () => {
     const fetchPosts = async () => {
       try {
         setLoadingPosts(true);
-        const response = await axios.get('/api/student/community-posts');
-        setPosts(response.data || mockPosts);
+        const response = await axios.get('/api/student/community-posts', { withCredentials: true });
+        setPosts(response.data || []);
       } catch (error) {
         console.error("Error fetching posts:", error);
-        setPosts(mockPosts);
+        setPosts([]);
       } finally {
         setLoadingPosts(false);
       }
@@ -60,17 +60,10 @@ const Community = () => {
     }
   };
 
-
-
-
-
-
-
-
   const handleSubmitPost = async (e) => {
     e.preventDefault();
     if (!newPost.trim() && !selectedImage) return;
-  
+
     try {
       setPending(true);
       const hashtagArray = hashtags
@@ -78,16 +71,16 @@ const Community = () => {
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0)
         .map(tag => tag.startsWith('#') ? tag : `#${tag}`);
-  
+
       const isAdminPost = hashtagArray.some(tag => tag.toLowerCase() === '#admin');
-  
+
       let imageURL = null;
       if (selectedImage) {
         const fileRef = ref(storage, `communityPosts/${localStorage.getItem('email') || 'user'}/${Date.now()}_${selectedImage.name}`);
         await uploadBytes(fileRef, selectedImage);
         imageURL = await getDownloadURL(fileRef);
       }
-  
+
       const response = await axios.post('/api/student/community-posts', {
         content: newPost,
         hashtags: hashtagArray,
@@ -95,7 +88,7 @@ const Community = () => {
       }, {
         withCredentials: true, // Send JWT cookie
       });
-  
+
       const newPostData = {
         ...response.data.post,
         author: {
@@ -107,7 +100,7 @@ const Community = () => {
         downvotes: 0,
         userVote: null,
       };
-  
+
       setPosts(prevPosts => [newPostData, ...prevPosts]);
       setNewPost('');
       setHashtags('');
@@ -119,68 +112,16 @@ const Community = () => {
       }
     } catch (error) {
       console.error("Error creating post:", error);
-      // Add error state or alert for user feedback
-     
     } finally {
       setPending(false);
     }
   };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const handleVote = async (postId, voteType) => {
     try {
-      setPosts(prevPosts => 
-        prevPosts.map(post => {
-          if (post.id === postId) {
-            // If user already voted this way, remove the vote
-            if (post.userVote === voteType) {
-              return {
-                ...post,
-                upvotes: voteType === 'upvote' ? post.upvotes - 1 : post.upvotes,
-                downvotes: voteType === 'downvote' ? post.downvotes - 1 : post.downvotes,
-                userVote: null
-              };
-            } 
-            // If user voted the opposite way, remove old vote and add new one
-            else if (post.userVote !== null) {
-              return {
-                ...post,
-                upvotes: voteType === 'upvote' ? post.upvotes + 1 : post.upvotes - (post.userVote === 'upvote' ? 1 : 0),
-                downvotes: voteType === 'downvote' ? post.downvotes + 1 : post.downvotes - (post.userVote === 'downvote' ? 1 : 0),
-                userVote: voteType
-              };
-            } 
-            // If user hasn't voted yet
-            else {
-              return {
-                ...post,
-                upvotes: voteType === 'upvote' ? post.upvotes + 1 : post.upvotes,
-                downvotes: voteType === 'downvote' ? post.downvotes + 1 : post.downvotes,
-                userVote: voteType
-              };
-            }
-          }
-          return post;
-        })
+      const response = await axios.post(`/api/student/community-posts/${postId}/vote`, { voteType }, { withCredentials: true });
+      setPosts(prevPosts =>
+        prevPosts.map(post => post._id === response.data.post._id ? response.data.post : post)
       );
     } catch (error) {
       console.error("Error voting on post:", error);
@@ -189,7 +130,7 @@ const Community = () => {
 
   const filterPosts = () => {
     if (!filter) return posts;
-    return posts.filter(post => 
+    return posts.filter(post =>
       post.content.toLowerCase().includes(filter.toLowerCase()) ||
       post.hashtags.some(tag => tag.toLowerCase().includes(filter.toLowerCase()))
     );
@@ -197,7 +138,7 @@ const Community = () => {
 
   const mockPosts = [
     {
-      id: 1,
+      _id: 1,
       content: "Anyone interested in forming a study group for the upcoming exams?",
       hashtags: ["#Academic", "#StudyGroup"],
       author: {
@@ -211,7 +152,7 @@ const Community = () => {
       isAdminPost: false
     },
     {
-      id: 2,
+      _id: 2,
       content: "Movie night this Saturday in the common room! Bring snacks and good vibes.",
       hashtags: ["#Event", "#Social", "#MovieNight"],
       author: {
@@ -225,7 +166,7 @@ const Community = () => {
       isAdminPost: false
     },
     {
-      id: 3,
+      _id: 3,
       content: "IMPORTANT: Maintenance work will be carried out in Block C this weekend. Please plan accordingly.",
       hashtags: ["#Announcement", "#Admin", "#Hostel"],
       author: {
@@ -240,7 +181,6 @@ const Community = () => {
     }
   ];
 
-  // Admin post gradient (used for borders and tags)
   const adminGradient = "from-amber-500 to-red-600";
 
   return (
@@ -264,11 +204,11 @@ const Community = () => {
               </button>
               <Link to="/dashboard/Community/yourposts">
                 <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-all duration-150 flex items-center gap-2">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                    Your Posts
+                  </svg>
+                  Your Posts
                 </button>
               </Link>
             </div>
@@ -295,7 +235,7 @@ const Community = () => {
             ) : filterPosts().length > 0 ? (
               filterPosts().map((post, index) => (
                 <div 
-                  key={post.id || index} 
+                  key={post._id || index} 
                   className={`${post.isAdminPost ? `p-[3px] bg-gradient-to-r ${adminGradient}` : ''} rounded-lg transition-all duration-200 hover:shadow-xl`}
                 >
                   <div className="bg-gray-800 rounded-lg p-4 shadow-lg border border-gray-700">
@@ -355,7 +295,7 @@ const Community = () => {
                                 ? 'bg-green-500/20 text-green-500 border border-green-500' 
                                 : 'text-gray-400 hover:text-green-500 hover:bg-green-500/10 hover:border-green-500/50 border border-transparent'
                             } transition-all duration-200`}
-                            onClick={() => handleVote(post.id, 'upvote')}
+                            onClick={() => handleVote(post._id, 'upvote')}
                           >
                             <svg 
                               className="w-5 h-5" 
@@ -382,7 +322,7 @@ const Community = () => {
                                 ? 'bg-red-500/20 text-red-500 border border-red-500' 
                                 : 'text-gray-400 hover:text-red-500 hover:bg-red-500/10 hover:border-red-500/50 border border-transparent'
                             } transition-all duration-200`}
-                            onClick={() => handleVote(post.id, 'downvote')}
+                            onClick={() => handleVote(post._id, 'downvote')}
                           >
                             <svg 
                               className="w-5 h-5" 
@@ -549,5 +489,3 @@ const Community = () => {
 };
 
 export default Community;
-
-

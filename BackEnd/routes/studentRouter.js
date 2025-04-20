@@ -570,6 +570,11 @@ studentRouter.get("/community-posts", async (req, res) => {
   }
 });
 
+
+
+
+
+
 // POST to update vote on a community post
 studentRouter.post("/community-posts/:id/vote", async (req, res) => {
   const cookie = req.cookies.jwt;
