@@ -147,7 +147,7 @@ These models are interlinked through references (e.g., `studentId` in complaints
 
 - Admin can see lists of all active complaints and pending leave applications.
 - One-click approval or rejection of leaves.
-- Option to delete community posts and flag user reports.
+
 
 ---
 
