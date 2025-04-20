@@ -149,7 +149,7 @@ const Navbar = ({ onLogout }) => {
                 />
               </button>
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-700 rounded-xl shadow-xl z-50">
+                <div className="absolute right-0 mt-2 w-44 bg-white text-white dark:bg-gray-700 rounded-xl shadow-xl z-50">
                   <ul className="py-2">
                     <li>
                       <a href="/dashboard/Profile" className="block px-4 py-2 text-sm hover:bg-blue-50 dark:hover:bg-gray-600">Profile</a>
