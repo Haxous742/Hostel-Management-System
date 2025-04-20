@@ -183,6 +183,16 @@ This image showcases the **Leave Application Form**:
 
 ---
 
+
+![My Photo](photos/otpforleave.png)
+#### 🖼️ `otpforleave.png`
+This image highlights the **OTP Verification Page**:
+- Once the leave form is submitted, an OTP is sent to the parent's registered email.
+- Students are redirected to this screen to enter the OTP.
+- Ensures that **parental awareness and approval** is incorporated in the leave process.
+
+---
+
 ![My Photo](photos/complaints.png)
 #### 🖼️ `complaints.png`
 This screenshot represents the **Complaints Section**:
