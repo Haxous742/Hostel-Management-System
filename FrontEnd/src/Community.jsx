@@ -19,7 +19,7 @@ const Community = () => {
   const fileInputRef = useRef(null);
 
   const hashtagSuggestions = [
-    'Announcement', 'Event', 'Question', 'General', 
+    'Announcement', 'Event', 'Question', 'General',  
     'Hostel', 'Mess', 'Academic', 'Social',  ];
 
   useEffect(() => {
